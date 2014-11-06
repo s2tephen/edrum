@@ -1,2 +1,11 @@
-<h1>Learn#learn</h1>
-<p>Find me in app/views/learn/learn.html.erb</p>
+<h1>eDrum Learn Mode</h1>
+
+<canvas id="learn-canvas" width="600" height="600" style="border:1px solid #000000;"></canvas>
+
+<script>
+  var c = document.getElementById("learn-canvas");
+  var ctx = c.getContext("2d");
+  ctx.moveTo(0,0);
+  ctx.lineTo(c.width,c.height);
+  ctx.stroke();
+</script>
