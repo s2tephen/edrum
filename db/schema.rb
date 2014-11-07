@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141107005145) do
+ActiveRecord::Schema.define(version: 20141107172238) do
 
   create_table "notes", force: true do |t|
     t.integer  "bar"
@@ -32,7 +32,6 @@ ActiveRecord::Schema.define(version: 20141107005145) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "file_path"
-    t.datetime "date_added"
   end
 
   create_table "sessions", force: true do |t|
@@ -44,7 +43,6 @@ ActiveRecord::Schema.define(version: 20141107005145) do
   create_table "users", force: true do |t|
     t.string   "first_name"
     t.string   "last_name"
-    t.datetime "date_started"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
