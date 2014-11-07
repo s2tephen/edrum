@@ -12,8 +12,10 @@ var Sequence = function(notes) {
   // Public methods
   //
 
-  this.draw = function(){
+  this.draw = function(ctx){
     // TODO
-    // for note in notes...
+    for each(var note in this.notes) {
+      note.draw(ctx, 50, 50, 100,100);
+    }
   }
 }

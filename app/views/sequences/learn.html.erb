@@ -3,9 +3,12 @@
 <canvas id="learn-canvas" width="600" height="600" style="border:1px solid #000000;"></canvas>
 
 <script>
+  var TOP_OFFSET = 50;
   var c = document.getElementById("learn-canvas");
   var ctx = c.getContext("2d");
-  ctx.moveTo(0,0);
-  ctx.lineTo(c.width,c.height);
-  ctx.stroke();
+  for (var i=0; i < 60; i+=10) {
+    ctx.moveTo(0,i+TOP_OFFSET);
+    ctx.lineTo(c.width,i+TOP_OFFSET);
+    ctx.stroke();
+  }
 </script>

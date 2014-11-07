@@ -13,7 +13,9 @@ var Note = function(note, duration) {
   // Public methods
   //
 
-  this.draw = function(){
-    // TODO
+  this.draw = function(ctx, x, y, height, width){
+    ctx.moveTo(x,y);
+    var img='<img src="/assets/note-basic.png" />';
+    ctx.drawImage(img,10,10);
   }
 }
