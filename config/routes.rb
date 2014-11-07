@@ -1,4 +1,12 @@
 Rails.application.routes.draw do
+  resources :sessions
+
+  resources :users
+
+  resources :notes
+
+  resources :sequences
+
   root 'home#index'
 
   get 'learn' => 'learn#learn'

@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Bar:</strong>
+  <%= @note.bar %>
+</p>
+
+<p>
+  <strong>Beat:</strong>
+  <%= @note.beat %>
+</p>
+
+<p>
+  <strong>Duration:</strong>
+  <%= @note.duration %>
+</p>
+
+<p>
+  <strong>Drum:</strong>
+  <%= @note.drum %>
+</p>
+
+<%= link_to 'Edit', edit_note_path(@note) %> |
+<%= link_to 'Back', notes_path %>

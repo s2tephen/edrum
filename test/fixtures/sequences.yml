@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  artist: MyString
+  default_bpm: 1
+  meter_top: 1
+  meter_bottom: 1
+  time: 1
+
+two:
+  title: MyString
+  artist: MyString
+  default_bpm: 1
+  meter_top: 1
+  meter_bottom: 1
+  time: 1

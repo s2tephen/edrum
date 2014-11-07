@@ -1,0 +1,35 @@
+<h1>Listing sequences</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Artist</th>
+      <th>Default bpm</th>
+      <th>Meter top</th>
+      <th>Meter bottom</th>
+      <th>Time</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @sequences.each do |sequence| %>
+      <tr>
+        <td><%= sequence.title %></td>
+        <td><%= sequence.artist %></td>
+        <td><%= sequence.default_bpm %></td>
+        <td><%= sequence.meter_top %></td>
+        <td><%= sequence.meter_bottom %></td>
+        <td><%= sequence.time %></td>
+        <td><%= link_to 'Show', sequence %></td>
+        <td><%= link_to 'Edit', edit_sequence_path(sequence) %></td>
+        <td><%= link_to 'Destroy', sequence, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Sequence', new_sequence_path %>
