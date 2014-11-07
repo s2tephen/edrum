@@ -7,7 +7,7 @@ Rails.application.routes.draw do
 
   resources :sequences
 
-  root 'home#index'
+  root 'sequences#index'
 
   get 'learn' => 'learn#learn'
 
