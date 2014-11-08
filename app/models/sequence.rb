@@ -26,15 +26,16 @@ def create_notes
 
 	### get the meter of the music piece
 	self.meter_top = seq.tracks.first.events.select{ |a| a.class == MIDI::TimeSig }.first.data[0] 
-	self.meter_bottom = seq.tracks.first.events.select{ |a| a.class == MIDI::TimeSig }.first.data[1]
+	self.meter_bottom = 2**seq.tracks.first.events.select{ |a| a.class == MIDI::TimeSig }.first.data[1]
 
 	info_array.each do |n|
 		
 		note_drum = key_to_drum(n.note)
 		note_duration = (n.off.time_from_start - n.time_from_start) + 1
-		### still need to do bar and beat#######
-		note_bar = []
-		note_beat = []
+		n.time_from_start
+		# TODO: test these for a variety of time signatures
+		note_bar = ((n.time_from_start / seq.ppqn) * (self.meter_bottom / 4) / self.meter_top).floor
+		note_beat = (n.time_from_start / seq.ppqn) * (self.meter_bottom / 4) % self.meter_top + 1
 
 		new_note = Note.create(:drum => note_drum, :duration => note_duration, :bar => note_bar, :beat => note_beat)
 		
