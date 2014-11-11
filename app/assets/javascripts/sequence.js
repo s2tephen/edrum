@@ -12,10 +12,14 @@ var Sequence = function(notes) {
   // Public methods
   //
 
-  this.draw = function(ctx){
+  this.draw = function(ctx, cur_location){
     // TODO
-    for (var note in this.notes) {
-      note.draw(ctx, 50, 50, 100,100);
+    for (var i = 0; i + cur_location < this.notes.length; i++) {
+      notes[i+cur_location].draw(ctx,
+                                 0 + (i*LINE_SPREAD),
+                                 TOP_OFFSET - LINE_SPREAD + (notes[i+cur_location].note*LINE_SPREAD),
+                                 LINE_SPREAD,
+                                 LINE_SPREAD);
     }
   }
 }

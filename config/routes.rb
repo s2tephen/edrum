@@ -9,7 +9,7 @@ Rails.application.routes.draw do
 
   root 'sequences#index'
 
-  get 'learn' => 'sequences#learn'
+  get 'learn/:id' => 'sequences#learn'
 
 
   # The priority is based upon order of creation: first created -> highest priority.
