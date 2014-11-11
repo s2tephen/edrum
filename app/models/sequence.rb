@@ -3,8 +3,8 @@ class Sequence < ActiveRecord::Base
   has_many :sessions
 
 def create_notes
-	mapping = {35 => 8, 36 => 8, 38 => 6, 40 => 6, 42 => 2, 44 => 2, 46 => 2, 49 => 1, 57 => 1, 52 => 1,
-			  		 55 => 1, 51 => 3, 53 => 3, 59 => 3, 41 => 7, 43 => 7, 45 => 7, 47 => 5, 48 => 4, 50 => 4 }
+	mapping = {35 => 7, 36 => 7, 38 => 5, 40 => 5, 42 => 1, 44 => 1, 46 => 1, 49 => 0, 57 => 0, 52 => 0,
+			  		 55 => 0, 51 => 2, 53 => 2, 59 => 2, 41 => 6, 43 => 6, 45 => 6, 47 => 4, 48 => 3, 50 => 3 }
 
 	### initialize empty sequence of drum notes
 	note_sequence = []
@@ -26,7 +26,7 @@ def create_notes
 
 	info_array.each do |n|
 		
-		note_drum = mapping[n.note]
+		note_drum = mapping[n.note]	
 		note_duration = (n.off.time_from_start - n.time_from_start) + 1
 		n.time_from_start
 		# TODO: test these for a variety of time signatures
