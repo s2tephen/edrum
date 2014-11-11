@@ -1,5 +1,5 @@
 class SequencesController < ApplicationController
-  before_action :set_sequence, only: [:show, :edit, :update, :destroy]
+  before_action :set_sequence, only: [:show, :edit, :update, :destroy, :learn]
 
   # GET /sequences
   # GET /sequences.json
@@ -61,6 +61,8 @@ class SequencesController < ApplicationController
     end
   end
 
+  # GET /sequences/1
+  # GET /sequences/1.json
   def learn
 
   end
