@@ -33,7 +33,7 @@ def create_notes
 		note_bar = ((n.time_from_start / seq.ppqn) * (self.meter_bottom / 4) / self.meter_top).floor
 		note_beat = (n.time_from_start / seq.ppqn) * (self.meter_bottom / 4) % self.meter_top + 1
 
-		new_note = Note.create(:drum => note_drum, :duration => note_duration, :bar => note_bar, :beat => note_beat)
+		new_note = Note.create(:drum => note_drum, :duration => note_duration, :bar => note_bar, :beat => note_beat, :sequence_id => self.id)
 		
 		note_sequence.push(new_note)
 	end
