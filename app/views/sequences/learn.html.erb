@@ -6,11 +6,12 @@
 <%= javascript_tag "var sequence = #{@sequence.to_json}" %>
 
 <script>
+  console.log(sequence);
 
   var c = document.getElementById("learn-canvas");
   var ctx = c.getContext("2d");
   var TOP_OFFSET = 100;
-  var LINE_SPREAD = 40
+  var LINE_SPREAD = 40;
 
   //draw lines
   var drawLines = function() {

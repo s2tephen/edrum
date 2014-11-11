@@ -2,9 +2,9 @@
 // will have a draw method
 
 var Note = function(note, duration) {
-    ////////////////////////////////////////////////
-    // Representation
-    //
+  ////////////////////////////////////////////////
+  // Representation
+  //
 
   this.note = note;
   this.duration = duration;
@@ -13,7 +13,7 @@ var Note = function(note, duration) {
   // Public methods
   //
 
-  this.draw = function(ctx, x, y, height, width){
+  this.draw = function(ctx, x, y, height, width) {
     var imageObj = new Image();
 
     imageObj.onload = function() {
