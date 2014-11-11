@@ -14,7 +14,7 @@ var Sequence = function(notes) {
 
   this.draw = function(ctx){
     // TODO
-    for each(var note in this.notes) {
+    for (var note in this.notes) {
       note.draw(ctx, 50, 50, 100,100);
     }
   }

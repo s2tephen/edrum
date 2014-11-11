@@ -14,8 +14,11 @@ var Note = function(note, duration) {
   //
 
   this.draw = function(ctx, x, y, height, width){
-    ctx.moveTo(x,y);
-    var img='<img src="/assets/note-basic.png" />';
-    ctx.drawImage(img,10,10);
+    var imageObj = new Image();
+
+    imageObj.onload = function() {
+      ctx.drawImage(imageObj, x, y, width, height);
+    };
+    imageObj.src = '/assets/note-basic.png';
   }
 }
