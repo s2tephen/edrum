@@ -1,13 +1,17 @@
 // this file will contain the representation of a note
 // will have a draw method
 
-var Note = function(note, duration) {
+var Note = function(noteObj) {
   ////////////////////////////////////////////////
   // Representation
   //
+  this.noteObj = noteObj;
 
-  this.note = note;
-  this.duration = duration;
+  this.drum = noteObj.drum;
+  this.duration = noteObj.duration;
+
+  this.bar = noteObj.bar;
+  this.beat = noteObj.beat;
 
   ////////////////////////////////////////////////
   // Public methods
@@ -19,6 +23,8 @@ var Note = function(note, duration) {
     imageObj.onload = function() {
       ctx.drawImage(imageObj, x, y, width, height);
     };
+
+    // code in different note images based on this.drum
     imageObj.src = '/assets/note-basic.png';
   }
 }

@@ -1,14 +1,13 @@
 <h1>eDrum Learn Mode</h1>
 
 <canvas id="learn-canvas" width="600" height="600" style="border:1px solid #000000;"></canvas>
-<button id="back">Back</button>
-<button id="next">Next</button>
+<button id="back">&#8592; Back</button>
+<button id="next">Next &#8594;</button>
 
-<%= javascript_tag "var sequence = #{@sequence.notes.to_json}" %>
+<%= javascript_tag "var sequence = #{@sequence.to_json}" %>
+<%= javascript_tag "var notes = #{@sequence.notes.to_json}" %>
 
 <script>
-  console.log(sequence);
-
   var c = document.getElementById("learn-canvas");
   var ctx = c.getContext("2d");
   var TOP_OFFSET = 100;
@@ -32,30 +31,50 @@
 
   drawLines(ctx);
 
-  var testNotes = [];
-  for (var i = 0; i < 55; i++) {
-    testNotes.push(new Note(i%7, 1));
+  // var testNotes = [];
+  // for (var i = 0; i < 55; i++) {
+  //   testNotes.push(new Note(i%7, 1));
+  // }
+
+  // var testSequence = new Sequence(testNotes);
+
+  var increment_locs = function(sequence, cur_bar, cur_beat) {
+    if (cur_beat == 3 /*sequence.meter_top - 1*/) {
+      return [cur_bar + 1, 0];
+    } else {
+      return [cur_bar, cur_beat + 1];
+    }
+  }
+  var decrement_locs = function(sequence, cur_bar, cur_beat) {
+    if (cur_beat == 0) {
+      return [cur_bar - 1, 3 /*sequence.meter_top - 1*/];
+    } else {
+      return [cur_bar, cur_beat - 1];
+    }
   }
 
-  var testSequence = new Sequence(testNotes);
-
   var startSequence = function(sequence) {
-    var cur_location = 0;
-    sequence.draw(ctx, cur_location)
+    var cur_bar = 0;
+    var cur_beat = 0;
+    sequence.draw(ctx, cur_bar, cur_beat);
 
     var stepSequence = function() {
-      cur_location++;
+      var cur_loc = increment_locs(sequence, cur_bar, cur_beat);
+      cur_bar = cur_loc[0];
+      cur_beat = cur_loc[1];
       ctx.clearRect(0, 0, c.width, c.height);
       drawLines();
-      sequence.draw(ctx, cur_location);
+      sequence.draw(ctx, cur_bar, cur_beat);
     }
 
     var stepBackSequence = function() {
-      if (cur_location > 0) {
-        cur_location--;
+      if (!(cur_bar == 0 && cur_beat == 0)) {
+        var cur_loc = decrement_locs(sequence, cur_bar, cur_beat);
+        cur_bar = cur_loc[0];
+        cur_beat = cur_loc[1];
         ctx.clearRect(0, 0, c.width, c.height);
         drawLines();
-        sequence.draw(ctx, cur_location);
+        sequence.draw(ctx, cur_bar, cur_beat);
       }
     }
 
@@ -68,11 +87,12 @@
   }
 
   var drawNotes = [];
-  for (var i = 0; i < sequence.length; i++) {
-    drawNotes.push(new Note(sequence[i].drum, sequence[i].duration));
+  for (var i = 0; i < notes.length; i++) {
+    drawNotes.push(new Note(notes[i]));
   }
 
-  var drawSequence = new Sequence(drawNotes);
+  console.log(notes);
+  var drawSequence = new Sequence(drawNotes, 4);
 
   startSequence(drawSequence);
 
