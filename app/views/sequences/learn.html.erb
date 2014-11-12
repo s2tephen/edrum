@@ -1,9 +1,10 @@
 <h1>eDrum Learn Mode</h1>
 
 <canvas id="learn-canvas" width="600" height="600" style="border:1px solid #000000;"></canvas>
+<button id="back">Back</button>
 <button id="next">Next</button>
 
-<%= javascript_tag "var sequence = #{@sequence.to_json}" %>
+<%= javascript_tag "var sequence = #{@sequence.notes.to_json}" %>
 
 <script>
   console.log(sequence);
@@ -49,12 +50,31 @@
       sequence.draw(ctx, cur_location);
     }
 
+    var stepBackSequence = function() {
+      if (cur_location > 0) {
+        cur_location--;
+        ctx.clearRect(0, 0, c.width, c.height);
+        drawLines();
+        sequence.draw(ctx, cur_location);
+      }
+    }
+
     $("#next").click(function(evt) {
       stepSequence();
-    })
+    });
+    $("#back").click(function(evt) {
+      stepBackSequence();
+    });
   }
 
-  startSequence(testSequence);
+  var drawNotes = [];
+  for (var i = 0; i < sequence.length; i++) {
+    drawNotes.push(new Note(sequence[i].drum, sequence[i].duration));
+  }
+
+  var drawSequence = new Sequence(drawNotes);
+
+  startSequence(drawSequence);
 
 
 

@@ -64,7 +64,7 @@ class SequencesController < ApplicationController
   # GET /sequences/1
   # GET /sequences/1.json
   def learn
-
+    puts @sequence.notes
   end
 
   private

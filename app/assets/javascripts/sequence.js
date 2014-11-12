@@ -17,7 +17,7 @@ var Sequence = function(notes) {
     for (var i = 0; i + cur_location < this.notes.length; i++) {
       notes[i+cur_location].draw(ctx,
                                  0 + (i*LINE_SPREAD),
-                                 TOP_OFFSET - LINE_SPREAD + (notes[i+cur_location].note*LINE_SPREAD),
+                                 TOP_OFFSET - LINE_SPREAD*2 + (notes[i+cur_location].note*LINE_SPREAD),
                                  LINE_SPREAD,
                                  LINE_SPREAD);
     }
