@@ -1,14 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Edrum</title>
+  <title>eDrum</title>
   <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
   <%= csrf_meta_tags %>
 </head>
 <body>
 
-<%= yield %>
+  <%= render 'layouts/navbar' %>
+
+  <section class="main">
+    <div class="container-fluid">
+      <%= yield %>
+    </div>
+  </section>
 
 </body>
 </html>

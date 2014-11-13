@@ -13,4 +13,25 @@
 //= require jquery
 //= require jquery_ujs
 //= require turbolinks
+//= require bootstrap
 //= require_tree .
+
+$(document).ready(function() {
+  $('.navbar-menu').click(function() {
+    $('body').toggleClass('menu-visible');
+  });
+  $('.main').click(function() {
+    $('body').removeClass('menu-visible');
+  });
+  $('.navbar-search').click(function() {
+    $('body').toggleClass('search-visible');
+  });
+  $("#library").tablesorter({
+    sortList: [[0,0]],
+    headers: {
+      5: {
+        sorter: false
+      }
+    }
+  });
+});
