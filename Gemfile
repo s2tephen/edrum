@@ -45,3 +45,6 @@ gem 'spring',        group: :development
 
 # Use midilib for MIDI parsing
 gem 'midilib'
+
+# Use serialport for Arduino communication
+gem 'serialport'
