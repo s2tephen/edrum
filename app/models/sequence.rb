@@ -82,7 +82,7 @@ class Sequence < ActiveRecord::Base
         lengths << '1,'
       else
         track1 << notes_at_beat[0].drum.to_s << ','
-        lengths << [notes_at_beat[0].duration, notes_at_beat[1].duration, notes_at_beat[2].duration].min.to_s << ','
+        lengths << [notes_at_beat[0], notes_at_beat[1], notes_at_beat[2]].compact.map { |n| n.duration }.min.to_s << ','
       end
 
       if notes_at_beat[1].nil?
