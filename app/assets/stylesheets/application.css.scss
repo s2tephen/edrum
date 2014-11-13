@@ -196,6 +196,10 @@ body {
 
 .main {
   height: 100%;
+  .container-fluid {
+    height: 100%;
+    padding: 0 20px;
+  }
 }
 
 p, ol, ul, td {
@@ -204,7 +208,7 @@ p, ol, ul, td {
 
 .table {
   width: 100vw;
-  margin: 20px -15px;
+  margin: 20px -20px;
   thead tr th {
     padding: 0 20px 10px;
     text-transform: uppercase;
@@ -216,11 +220,17 @@ p, ol, ul, td {
       font-size: 0.9em;
       margin-left: 10px;
     }
-    &.headerSortUp:after {
-      content: "\f0de";
+    &.headerSortUp {
+      color: rgb(0, 0, 0);
+      &:after {
+        content: "\f0de";
+      }
     }
-    &.headerSortDown:after {
-      content: "\f0dd";
+    &.headerSortDown {
+      color: rgb(0, 0, 0);
+      &:after {
+        content: "\f0dd";
+      }
     }
     &:last-child:after {
       content: "";
@@ -229,5 +239,33 @@ p, ol, ul, td {
   tbody tr td {
     padding: 20px;
     font-size: 1.2em;
+  }
+}
+
+.wrapper {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  margin: 0 auto -160px;
+}
+
+.push, .footer {
+  height: 80px;
+}
+
+.footer {
+  .logo {
+    height: 24px;
+    margin-top: -5px;
+    margin-right: 10px;
+    float: left;
+    path {
+      fill: rgb(111, 84, 153); 
+    }
+  }
+
+  .copyright {
+    float: left;
+    color: rgb(153, 153, 153);
   }
 }

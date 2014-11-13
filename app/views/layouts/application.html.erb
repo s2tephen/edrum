@@ -12,9 +12,13 @@
 
   <section class="main">
     <div class="container-fluid">
-      <%= yield %>
+      <div class="wrapper">
+        <%= yield %>
+        <div class="push"></div>
+      </div>
+
+      <%= render 'layouts/footer' %>
     </div>
   </section>
-
 </body>
 </html>
