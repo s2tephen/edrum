@@ -71,7 +71,7 @@ class SequencesController < ApplicationController
   def hits
     response.headers["Content-Type"] = "text/event-stream"
     # 3.times do |n|
-    response.stream.write "data: hello world! \n\n"
+    response.stream.write "data: {\"drum\": 7, \"start\": 0} \n\n"
       # sleep 2
     # end
     response.stream.close

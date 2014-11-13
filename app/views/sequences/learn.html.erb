@@ -79,6 +79,28 @@
       }
     }
 
+    var hitSource = new EventSource("/sequences/" + sequence.id + "/hits");
+
+    hitSource.onopen = function (e) {
+      console.log("OPEN state \n"+e.data);
+    };
+
+    hitSource.onmessage = function(e) {
+      var hit = jQuery.parseJSON( e.data );
+      console.log(hit.drum);
+
+      // TODO: start time needs to accurately correlate to bar/beat in sequence
+      // TODO: support for checking if both notes at same time are hit
+      if (hit.drum == drawSequence.notes[hit.start].drum) {
+        console.log("HIT");
+        stepSequence();
+      }
+    };
+
+    hitSource.onerror = function (e) {
+       console.log("Error State  \n\n"+e.data);
+    };
+
     $("#next").click(function(evt) {
       stepSequence();
     });
@@ -87,19 +109,7 @@
     });
   }
 
-  var evSource = new EventSource("/sequences/" + sequence.id + "/hits");
 
-  evSource.onopen = function (e) {
-    console.log("OPEN state \n"+e.data);
-  };
-
-  evSource.onmessage = function(e) {
-    console.log("EventListener .. code.. " + e.data);
-  };
-
-  evSource.onerror = function (e) {
-     console.log("Error State  \n\n"+e.data);
-  };
 
   var drawNotes = [];
   for (var i = 0; i < notes.length; i++) {
