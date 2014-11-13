@@ -1,13 +1,17 @@
 // this file will contain the representation of a sequence
 // must be able to draw itself by calling all Notes within it
 
-var Sequence = function(notes, meter_top) {
+var Sequence = function(notes, sequenceObj) {
     ////////////////////////////////////////////////
     // Representation
     //
 
   this.notes = notes;
-  this.meter_top = meter_top;
+  this.sequenceObj = sequenceObj;
+
+  this.meter_top = 4/*sequenceObj.meter_top*/;
+  this.id = sequenceObj.id;
+
 
   ////////////////////////////////////////////////
   // Public methods

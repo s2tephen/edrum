@@ -87,13 +87,26 @@
     });
   }
 
+  var evSource = new EventSource("/sequences/" + sequence.id + "/hits");
+
+  evSource.onopen = function (e) {
+    console.log("OPEN state \n"+e.data);
+  };
+
+  evSource.onmessage = function(e) {
+    console.log("EventListener .. code.. " + e.data);
+  };
+
+  evSource.onerror = function (e) {
+     console.log("Error State  \n\n"+e.data);
+  };
+
   var drawNotes = [];
   for (var i = 0; i < notes.length; i++) {
     drawNotes.push(new Note(notes[i]));
   }
 
-  console.log(notes);
-  var drawSequence = new Sequence(drawNotes, 4);
+  var drawSequence = new Sequence(drawNotes, sequence);
 
   startSequence(drawSequence);
 

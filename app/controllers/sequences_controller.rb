@@ -1,4 +1,5 @@
 class SequencesController < ApplicationController
+  include ActionController::Live
   before_action :set_sequence, only: [:show, :edit, :update, :destroy, :learn]
 
   # GET /sequences
@@ -65,6 +66,15 @@ class SequencesController < ApplicationController
   # GET /sequences/1.json
   def learn
     puts @sequence.notes
+  end
+
+  def hits
+    response.headers["Content-Type"] = "text/event-stream"
+    # 3.times do |n|
+    response.stream.write "data: hello world! \n\n"
+      # sleep 2
+    # end
+    response.stream.close
   end
 
   private
