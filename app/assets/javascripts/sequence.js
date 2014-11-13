@@ -55,7 +55,7 @@ var Sequence = function(notes, meter_top) {
         } else {
           var bar_offset = (this.notes[i].bar - cur_bar) * this.meter_top;
           var beat_offset = this.notes[i].beat - cur_beat;
-          x_loc = (bar_offset + beat_offset) * LINE_SPREAD;
+          x_loc = (bar_offset + beat_offset) * LINE_SPREAD*WIDTH_MULTIPLIER;
         }
       }
       if (should_draw) {
@@ -63,7 +63,7 @@ var Sequence = function(notes, meter_top) {
                       x_loc,
                       y_loc,
                       LINE_SPREAD,
-                      LINE_SPREAD);
+                      LINE_SPREAD*WIDTH_MULTIPLIER);
       }
     }
   }

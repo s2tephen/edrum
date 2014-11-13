@@ -25,6 +25,6 @@ var Note = function(noteObj) {
     };
 
     // code in different note images based on this.drum
-    imageObj.src = '/assets/note-basic.png';
+    imageObj.src = '/assets/oval-basic.png';
   }
 }

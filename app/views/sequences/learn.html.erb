@@ -12,6 +12,7 @@
   var ctx = c.getContext("2d");
   var TOP_OFFSET = 100;
   var LINE_SPREAD = 40;
+  var WIDTH_MULTIPLIER = 1.5;
 
   //draw lines
   var drawLines = function() {
@@ -24,7 +25,7 @@
 
       ctx.beginPath();
       ctx.strokeStyle = "#FF0000";
-      ctx.rect(0, 0, LINE_SPREAD, c.height);
+      ctx.rect(0, 0, LINE_SPREAD*WIDTH_MULTIPLIER, c.height);
       ctx.stroke();
     }
   }
