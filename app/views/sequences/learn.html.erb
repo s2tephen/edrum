@@ -33,6 +33,7 @@
     for (var i=0; i < 6*LINE_SPREAD; i+=LINE_SPREAD) {
       ctx.beginPath();
       ctx.strokeStyle = "black";
+      ctx.lineWidth = 2.0;
       ctx.moveTo(0,i+TOP_OFFSET);
       ctx.lineTo(c.width,i+TOP_OFFSET);
       ctx.stroke();
