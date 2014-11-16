@@ -2,25 +2,30 @@ class Sequence < ActiveRecord::Base
   has_many :notes
   has_many :sessions
 
+  attr_accessor :input
+
   def create_notes
+    # empty db first
+    self.notes.each do |n|
+      n.destroy
+    end
+
     mapping = {35 => 7, 36 => 7, 38 => 5, 40 => 5, 42 => 1, 44 => 1, 46 => 1, 49 => 0, 57 => 0, 52 => 0,
                55 => 0, 51 => 2, 53 => 2, 59 => 2, 41 => 6, 43 => 6, 45 => 6, 47 => 4, 48 => 3, 50 => 3 }
 
-    ### initialize empty sequence of drum notes
+    # initialize empty sequence of drum notes
     note_sequence = []
-
-    ### Create a new, empty sequence.
     seq = MIDI::Sequence.new()
 
-    ### Read the contents of a MIDI file into the sequence.
+    # read midi file
     File.open(File.join(Rails.root, 'app', 'assets', 'midis', self.file_path), 'rb') { | file |
         seq.read(file)
     }
 
-    ### find sequence of notes from when they turn on
+    # find sequence of notes from when they turn on
     info_array = seq.tracks.first.events.select { |e| e.class == MIDI::NoteOn}
 
-    ### get the meter of the music piece
+    # get the meter of the music piece
     self.meter_top = seq.tracks.first.events.select{ |a| a.class == MIDI::TimeSig }.first.data[0]
     self.meter_bottom = 2**seq.tracks.first.events.select{ |a| a.class == MIDI::TimeSig }.first.data[1]
 
@@ -41,29 +46,29 @@ class Sequence < ActiveRecord::Base
   end
 
   def start_seq(mode, action, bpm)
-    # create header
-    header = '[h:'
+    # create metadata
+    metadata = '[m:'
 
     if mode == 'learn'
-      header << '0,'
+      metadata << '0,'
     elsif mode == 'practice'
-      header << '1,'
+      metadata << '1,'
     elsif mode == 'compose'
-      header << '2,'
+      metadata << '2,'
     else
       return nil
     end
 
     if action == 'play'
-      header << '0,'
+      metadata << '0,'
     elsif action == 'listen'
-      header << '1,'
+      metadata << '1,'
     else
       return nil
     end
 
     length = self.notes.last.bar * self.meter_top + self.notes.last.beat
-    header << bpm.to_s << ',' << length.to_s << ']'
+    metadata << bpm.to_s << ',' << length.to_s << ']'
 
     # create tracks/lengths
     track1 = '[t:'
@@ -99,11 +104,11 @@ class Sequence < ActiveRecord::Base
     end
 
     track1[-1], track2[-1], track3[-1], lengths[-1] = ']', ']', ']', ']'
-    seq = [header, track1, track2, track3, lengths]
+    seq = [metadata, track1, track2, track3, lengths]
 
     # setup serial port
-    port_str = '/dev/tty.usbmodem1411'
-    baud_rate = 9600
+    port_str = '/dev/tty.usbserial-14P50042'
+    baud_rate = 115200
     data_bits = 8
     stop_bits = 1
     parity = SerialPort::NONE
@@ -111,21 +116,13 @@ class Sequence < ActiveRecord::Base
 
     # write sequence to serial
     seq.each do |i|
-      puts 'laptop> ' + i
+      puts 'app> ' + i
       sp.write i
     end
 
     sp.flush
-    sleep 3
-
-    while (o = sp.gets.chomp) do
-      puts 'arduino> '+ o
-      if o == '...done.'
-        break
-      end
-    end
-
     sp.close
+
     return seq
   end
 end

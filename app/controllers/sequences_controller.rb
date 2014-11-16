@@ -68,12 +68,48 @@ class SequencesController < ApplicationController
     puts @sequence.notes
   end
 
-  def hits
-    response.headers["Content-Type"] = "text/event-stream"
-    # 3.times do |n|
-    response.stream.write "data: {\"drum\": 7, \"start\": 0} \n\n"
-      # sleep 2
+  # GET /serial
+  def serial
+    response.headers['Content-Type'] = 'text/event-stream'
+
+    port_str = '/dev/tty.usbserial-14P50042'
+    baud_rate = 115200
+    data_bits = 8
+    stop_bits = 1
+    parity = SerialPort::NONE
+    sp = SerialPort.new(port_str, baud_rate, data_bits, stop_bits, parity)
+
+    buf = ''
+    while true do
+      if (o = sp.gets)
+        buf << o
+        if buf.include? ']'
+          puts 'mcu> '+ buf.strip
+          if buf.include? '[e]'
+            sp.flush
+            break
+          else
+            hit = buf.strip[3..-2].split(',')
+            response.stream.write "data: {\"drum\": " + hit[0] + ", \"start\": " + hit[1] + "}\n\n"
+          end
+          buf = ''
+        end
+      end
+    end
+
+    # simulate arduino input
+    # 1000.times do |n|
+    #   drum = rand(8).to_s
+    #   start = n.to_s
+    #   puts 'mcu> [h:' + drum + ',' + start + ']'
+
+    #   hit = [drum, start]
+    #   response.stream.write "data: {\"drum\": " + hit[0] + ", \"start\": " + hit[1] + "}\n\n"
+    #   sleep 0.5
     # end
+  rescue IOError
+  ensure
+    # sp.close
     response.stream.close
   end
 
@@ -85,6 +121,6 @@ class SequencesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def sequence_params
-      params.require(:sequence).permit(:title, :artist, :default_bpm, :meter_top, :meter_bottom, :time)
+      params.require(:sequence).permit(:title, :artist, :default_bpm, :meter_top, :meter_bottom, :time, :buffer)
     end
 end

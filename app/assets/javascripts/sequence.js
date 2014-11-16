@@ -22,28 +22,28 @@ var Sequence = function(notes, sequenceObj) {
     for (var i = 0; i < this.notes.length; i++) {
       var y_loc;
       switch(this.notes[i].drum) {
-        case 1:
+        case 0:
           y_loc = -1;
           break;
-        case 2:
+        case 1:
           y_loc = 0;
           break;
-        case 3:
+        case 2:
           y_loc = .5;
           break;
-        case 4:
+        case 3:
           y_loc = 1;
           break;
-        case 5:
+        case 4:
           y_loc = 1.5;
           break;
-        case 6:
+        case 5:
           y_loc = 2;
           break;
-        case 7:
+        case 6:
           y_loc = 3;
           break;
-        case 8:
+        case 7:
           y_loc = 4;
           break;
       }

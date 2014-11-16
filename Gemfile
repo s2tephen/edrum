@@ -48,3 +48,6 @@ gem 'midilib'
 
 # Use serialport for Arduino communication
 gem 'serialport'
+
+# Use puma as webserver
+gem 'puma'

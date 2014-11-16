@@ -79,27 +79,39 @@
       }
     }
 
-    var hitSource = new EventSource("/sequences/" + sequence.id + "/hits");
+    var testSequence = drawSequence.notes // TODO: remove this test code
 
-    hitSource.onopen = function (e) {
-      console.log("OPEN state \n"+e.data);
-    };
-
+    var hitSource = new EventSource("/serial");
     hitSource.onmessage = function(e) {
-      var hit = jQuery.parseJSON( e.data );
-      console.log(hit.drum);
+      var hit = jQuery.parseJSON (e.data);
+      console.log(hit);
+
+      // TODO: remove this test code
+      if (hit.drum == testSequence[0].drum) {
+        testSequence.shift();
+        stepSequence();
+      }
+    }
+
+    // hitSource.onopen = function (e) {
+    //   console.log("OPEN state \n"+e.data);
+    // };
+
+    // hitSource.onmessage = function(e) {
+    //   var hit = jQuery.parseJSON( e.data );
+    //   console.log(hit.drum);
 
       // TODO: start time needs to accurately correlate to bar/beat in sequence
       // TODO: support for checking if both notes at same time are hit
-      if (hit.drum == drawSequence.notes[hit.start].drum) {
-        console.log("HIT");
-        stepSequence();
-      }
-    };
+    //   if (hit.drum == drawSequence.notes[hit.start].drum) {
+    //     console.log("HIT");
+    //     stepSequence();
+    //   }
+    // };
 
-    hitSource.onerror = function (e) {
-       console.log("Error State  \n\n"+e.data);
-    };
+    // hitSource.onerror = function (e) {
+    //    console.log("Error State  \n\n"+e.data);
+    // };
 
     $("#next").click(function(evt) {
       stepSequence();
