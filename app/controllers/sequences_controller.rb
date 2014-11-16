@@ -72,7 +72,7 @@ class SequencesController < ApplicationController
   def serial
     response.headers['Content-Type'] = 'text/event-stream'
 
-    port_str = '/dev/tty.usbserial-14P50042'
+    port_str = '/dev/tty.usbmodem1411'
     baud_rate = 115200
     data_bits = 8
     stop_bits = 1

@@ -1,13 +1,17 @@
-<h1>eDrum Learn Mode</h1>
+<% content_for :title, "Learn" %>
 
-<canvas id="learn-canvas" width="600" height="600" style="border:1px solid #000000;"></canvas>
-<button id="back">&#8592; Back</button>
-<button id="next">Next &#8594;</button>
+<canvas id="learn-canvas" width="1400" height="400"></canvas>
+
+<div class="drum-name">Crash Cymbal</div>
+<button class="btn btn-default" id="back">&#8592; Back</button>
+<button class="btn btn-default" id="next">Next &#8594;</button>
 
 <%= javascript_tag "var sequence = #{@sequence.to_json}" %>
 <%= javascript_tag "var notes = #{@sequence.notes.to_json}" %>
 
 <script>
+  var drums = ['Crash Cymbal', 'Hi-Hat', 'Ride Cymbal', 'Left Tom', 'Right Tom', 'Snare Drum', 'Floor Tom', 'Bass Drum'];
+
   var c = document.getElementById("learn-canvas");
   var ctx = c.getContext("2d");
   var TOP_OFFSET = 100;
@@ -22,12 +26,13 @@
       ctx.moveTo(0,i+TOP_OFFSET);
       ctx.lineTo(c.width,i+TOP_OFFSET);
       ctx.stroke();
-
-      ctx.beginPath();
-      ctx.strokeStyle = "#FF0000";
-      ctx.rect(0, 0, LINE_SPREAD*WIDTH_MULTIPLIER, c.height);
-      ctx.stroke();
     }
+
+    ctx.beginPath();
+    ctx.strokeStyle = "#FF0000";
+    ctx.moveTo(LINE_SPREAD*WIDTH_MULTIPLIER / 2, 0);
+    ctx.lineTo(LINE_SPREAD*WIDTH_MULTIPLIER / 2, 10*LINE_SPREAD);
+    ctx.stroke();
   }
 
   drawLines(ctx);
@@ -66,6 +71,12 @@
       ctx.clearRect(0, 0, c.width, c.height);
       drawLines();
       sequence.draw(ctx, cur_bar, cur_beat);
+      for (var i = 0; i < notes.length; i++) {
+        if (notes[i].bar == cur_bar && notes[i].beat == cur_beat) {
+          $('.drum-name').text(drums[notes[i].drum]);
+          break;
+        }
+      }
     }
 
     var stepBackSequence = function() {
@@ -76,6 +87,12 @@
         ctx.clearRect(0, 0, c.width, c.height);
         drawLines();
         sequence.draw(ctx, cur_bar, cur_beat);
+        for (var i = 0; i < notes.length; i++) {
+          if (notes[i].bar == cur_bar && notes[i].beat == cur_beat) {
+            $('.drum-name').text(drums[notes[i].drum]);
+            break;
+          }
+        }
       }
     }
 

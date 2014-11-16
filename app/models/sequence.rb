@@ -107,7 +107,7 @@ class Sequence < ActiveRecord::Base
     seq = [metadata, track1, track2, track3, lengths]
 
     # setup serial port
-    port_str = '/dev/tty.usbserial-14P50042'
+    port_str = '/dev/tty.usbmodem1411'
     baud_rate = 115200
     data_bits = 8
     stop_bits = 1
@@ -122,7 +122,7 @@ class Sequence < ActiveRecord::Base
 
     sp.flush
     sp.close
-
+    
     return seq
   end
 end

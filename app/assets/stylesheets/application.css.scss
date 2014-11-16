@@ -48,18 +48,28 @@ body {
     display: block;
     float: left;
     .icon-bar {
+      width: 20px;
       height: 3px;
       margin-left: auto;
       margin-right: auto;
       background-color: rgb(255, 255, 255);
       
     }
+    &.navbar-add {
+      position: absolute;
+      top: 0;
+      right: 60px;
+      .fa-plus {
+        font-size: 1.3em;
+        color: rgb(255, 255, 255);
+      }
+    }
     &.navbar-search {
       position: absolute;
       top: 0;
       right: 0;
       .fa-search {
-        font-size: 1.2em;
+        font-size: 1.3em;
         color: rgb(255, 255, 255);
       }
     }
