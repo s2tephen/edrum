@@ -2,7 +2,7 @@
 
 <canvas id="learn-canvas" width="1400" height="400"></canvas>
 
-<div class="drum-name">Crash Cymbal</div>
+<div class="drum-name"></div>
 <button class="btn btn-default" id="back">&#8592; Back</button>
 <button class="btn btn-default" id="next">Next &#8594;</button>
 
@@ -17,6 +17,7 @@
   var TOP_OFFSET = 100;
   var LINE_SPREAD = 40;
   var WIDTH_MULTIPLIER = 1.5;
+  var NOTE_SPACING = 5;
 
   //draw lines
   var drawLines = function() {
@@ -29,10 +30,25 @@
     }
 
     ctx.beginPath();
-    ctx.strokeStyle = "#FF0000";
-    ctx.moveTo(LINE_SPREAD*WIDTH_MULTIPLIER / 2, 0);
-    ctx.lineTo(LINE_SPREAD*WIDTH_MULTIPLIER / 2, 10*LINE_SPREAD);
+    ctx.strokeStyle = "black";
+    ctx.moveTo(0,TOP_OFFSET);
+    ctx.lineTo(0,(5*LINE_SPREAD)+TOP_OFFSET);
     ctx.stroke();
+
+    ctx.beginPath();
+    ctx.strokeStyle = "#FF0000";
+    ctx.moveTo(LINE_SPREAD*3.5 - NOTE_SPACING/2 + LINE_SPREAD*WIDTH_MULTIPLIER / 2, 0);
+    ctx.lineTo(LINE_SPREAD*3.5 - NOTE_SPACING/2 + LINE_SPREAD*WIDTH_MULTIPLIER / 2, 10*LINE_SPREAD);
+    ctx.stroke();
+
+    var clefObj = new Image();
+
+    clefObj.onload = function() {
+      ctx.drawImage(clefObj, 0, TOP_OFFSET-LINE_SPREAD, LINE_SPREAD*3, 7*LINE_SPREAD);
+    };
+
+    // code in different note images based on this.drum
+    clefObj.src = '/assets/g-clef.png';
   }
 
   drawLines(ctx);
@@ -63,12 +79,13 @@
     var cur_bar = 0;
     var cur_beat = 0;
     sequence.draw(ctx, cur_bar, cur_beat);
+    $('.drum-name').text(drums[notes[0].drum])
 
     var stepSequence = function() {
       var cur_loc = increment_locs(sequence, cur_bar, cur_beat);
       cur_bar = cur_loc[0];
       cur_beat = cur_loc[1];
-      ctx.clearRect(0, 0, c.width, c.height);
+      ctx.clearRect(LINE_SPREAD*3.5, 0, c.width, c.height);
       drawLines();
       sequence.draw(ctx, cur_bar, cur_beat);
       for (var i = 0; i < notes.length; i++) {
