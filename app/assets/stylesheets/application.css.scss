@@ -252,6 +252,16 @@ p, ol, ul, td {
   }
 }
 
+.modal {
+  overflow-y: hidden;
+  .modal-content {
+    padding: 0 20px;
+    h2 {
+      font-weight: 700;
+    }
+  }
+}
+
 .wrapper {
   min-height: 100%;
   height: auto !important;

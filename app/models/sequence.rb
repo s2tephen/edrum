@@ -4,12 +4,9 @@ class Sequence < ActiveRecord::Base
 
   attr_accessor :input
 
-  def create_notes
-    # empty db first
-    self.notes.each do |n|
-      n.destroy
-    end
+  mount_uploader :midi, MidiUploader
 
+  def create_notes
     mapping = {35 => 7, 36 => 7, 38 => 5, 40 => 5, 42 => 1, 44 => 1, 46 => 1, 49 => 0, 57 => 0, 52 => 0,
                55 => 0, 51 => 2, 53 => 2, 59 => 2, 41 => 6, 43 => 6, 45 => 6, 47 => 4, 48 => 3, 50 => 3 }
 
@@ -18,12 +15,12 @@ class Sequence < ActiveRecord::Base
     seq = MIDI::Sequence.new()
 
     # read midi file
-    File.open(File.join(Rails.root, 'app', 'assets', 'midis', self.file_path), 'rb') { | file |
+    File.open(File.join(Rails.root, 'app', 'assets', 'midis', 'example.mid'), 'rb') { | file |
         seq.read(file)
     }
 
     # find sequence of notes from when they turn on
-    info_array = seq.tracks.first.events.select { |e| e.class == MIDI::NoteOn}
+    info_array = seq.tracks.last.events.select { |e| e.class == MIDI::NoteOn}
 
     # get the meter of the music piece
     self.meter_top = seq.tracks.first.events.select{ |a| a.class == MIDI::TimeSig }.first.data[0]
@@ -106,23 +103,37 @@ class Sequence < ActiveRecord::Base
     track1[-1], track2[-1], track3[-1], lengths[-1] = ']', ']', ']', ']'
     seq = [metadata, track1, track2, track3, lengths]
 
-    # setup serial port
-    port_str = '/dev/tty.usbmodem1411'
-    baud_rate = 115200
-    data_bits = 8
-    stop_bits = 1
-    parity = SerialPort::NONE
-    sp = SerialPort.new(port_str, baud_rate, data_bits, stop_bits, parity)
-
     # write sequence to serial
+    sp = SerialPort.new('/dev/tty.usbserial-14P50042', 115200, 8, 1, SerialPort::NONE)
+    
     seq.each do |i|
       puts 'app> ' + i
       sp.write i
     end
 
     sp.flush
+
+    buf = ''
+    while true do
+      if (o = sp.gets)
+        sp.flush
+        buf << o
+        if buf.include? ']'
+          puts 'mcu> '+ buf.strip
+          if buf.include? '[e]'
+            break
+          else
+            hit = buf.strip[3..-2].split(',')
+            message = {:drum => hit[0], :start => hit[1]}
+            $redis.publish('messages.create', message.to_json)
+          end
+          buf = ''
+        end
+      end
+    end
+
     sp.close
-    
+
     return seq
   end
 end

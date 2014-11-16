@@ -51,3 +51,12 @@ gem 'serialport'
 
 # Use puma as webserver
 gem 'puma'
+
+# Use redis for real-time events
+gem 'redis'
+
+# Use carrierwave for file uploads
+gem 'carrierwave'
+
+# Use simple_form for forms
+gem 'simple_form'
