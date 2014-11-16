@@ -19,6 +19,15 @@
   var WIDTH_MULTIPLIER = 1.5;
   var NOTE_SPACING = 5;
 
+    var clefObj = new Image();
+
+    clefObj.onload = function() {
+      ctx.drawImage(clefObj, 0, TOP_OFFSET-LINE_SPREAD, LINE_SPREAD*3, 7*LINE_SPREAD);
+    };
+
+    // code in different note images based on this.drum
+    clefObj.src = '/assets/g-clef.png';
+
   //draw lines
   var drawLines = function() {
     for (var i=0; i < 6*LINE_SPREAD; i+=LINE_SPREAD) {
@@ -40,15 +49,6 @@
     ctx.moveTo(LINE_SPREAD*3.5 - NOTE_SPACING/2 + LINE_SPREAD*WIDTH_MULTIPLIER / 2, 0);
     ctx.lineTo(LINE_SPREAD*3.5 - NOTE_SPACING/2 + LINE_SPREAD*WIDTH_MULTIPLIER / 2, 10*LINE_SPREAD);
     ctx.stroke();
-
-    var clefObj = new Image();
-
-    clefObj.onload = function() {
-      ctx.drawImage(clefObj, 0, TOP_OFFSET-LINE_SPREAD, LINE_SPREAD*3, 7*LINE_SPREAD);
-    };
-
-    // code in different note images based on this.drum
-    clefObj.src = '/assets/g-clef.png';
   }
 
   drawLines(ctx);
@@ -101,7 +101,7 @@
         var cur_loc = decrement_locs(sequence, cur_bar, cur_beat);
         cur_bar = cur_loc[0];
         cur_beat = cur_loc[1];
-        ctx.clearRect(0, 0, c.width, c.height);
+        ctx.clearRect(LINE_SPREAD*3.5, 0, c.width, c.height);
         drawLines();
         sequence.draw(ctx, cur_bar, cur_beat);
         for (var i = 0; i < notes.length; i++) {
