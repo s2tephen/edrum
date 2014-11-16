@@ -2,7 +2,9 @@
 
 <canvas id="learn-canvas" width="1400" height="400"></canvas>
 
-<div class="drum-name"></div>
+<div class="drum-name0"></div>
+<div class="drum-name1"></div>
+<div class="drum-name2"></div>
 <button class="btn btn-default" id="back">&#8592; Back</button>
 <button class="btn btn-default" id="next">Next &#8594;</button>
 
@@ -79,22 +81,54 @@
   var startSequence = function(sequence) {
     var cur_bar = 0;
     var cur_beat = 0;
-    sequence.draw(ctx, cur_bar, cur_beat);
-    $('.drum-name').text(drums[notes[0].drum])
+
+    var getCurrentNotes = function(cur_bar, cur_beat) {
+      var current_notes = [];
+      for (var i = 0; i < notes.length; i++) {
+        if (notes[i].bar == cur_bar && notes[i].beat == cur_beat) {
+          current_notes.push(notes[i]);
+        }
+      }
+      return current_notes;
+    }
+
+    var updateDrumNames = function(current_notes) {
+      for (var i = 0; i < 3; i++) {
+        if (current_notes[i]) {
+          $('.drum-name' + i).text(drums[current_notes[i].drum]);
+        } else {
+          $('.drum-name' + i).text("");
+        }
+      }
+    }
+
+    var drawScoreAndSequence = function(cur_bar, cur_beat) {
+      ctx.clearRect(LINE_SPREAD*3.5, 0, c.width, c.height);
+      drawLines();
+      sequence.draw(ctx, cur_bar, cur_beat);
+    }
+
+    console.log(getCurrentNotes(cur_bar,cur_beat));
+
+    drawScoreAndSequence(cur_bar, cur_beat);
+    updateDrumNames(getCurrentNotes(cur_bar, cur_beat));
 
     var stepSequence = function() {
       var cur_loc = increment_locs(sequence, cur_bar, cur_beat);
       cur_bar = cur_loc[0];
       cur_beat = cur_loc[1];
-      ctx.clearRect(LINE_SPREAD*3.5, 0, c.width, c.height);
-      drawLines();
-      sequence.draw(ctx, cur_bar, cur_beat);
-      for (var i = 0; i < notes.length; i++) {
-        if (notes[i].bar == cur_bar && notes[i].beat == cur_beat) {
-          $('.drum-name').text(drums[notes[i].drum]);
-          break;
-        }
+
+      console.log(getCurrentNotes(cur_bar,cur_beat)[0]);
+
+      while (getCurrentNotes(cur_bar,cur_beat)[0]) {
+        cur_loc = increment_locs(sequence, cur_bar, cur_beat);
+        cur_bar = cur_loc[0];
+        cur_beat = cur_loc[1];
       }
+
+      drawScoreAndSequence(cur_bar, cur_beat);
+      updateDrumNames(getCurrentNotes(cur_bar, cur_beat));
+
     }
 
     var stepBackSequence = function() {
@@ -114,19 +148,19 @@
       }
     }
 
-    var testSequence = drawSequence.notes // TODO: remove this test code
+    // var testSequence = drawSequence.notes // TODO: remove this test code
 
-    var hitSource = new EventSource("/serial");
-    hitSource.onmessage = function(e) {
-      var hit = jQuery.parseJSON (e.data);
-      console.log(hit);
+    // var hitSource = new EventSource("/serial");
+    // hitSource.onmessage = function(e) {
+    //   var hit = jQuery.parseJSON (e.data);
+    //   console.log(hit);
 
-      // TODO: remove this test code
-      if (hit.drum == testSequence[0].drum) {
-        testSequence.shift();
-        stepSequence();
-      }
-    }
+    //   // TODO: remove this test code
+    //   if (hit.drum == testSequence[0].drum) {
+    //     testSequence.shift();
+    //     stepSequence();
+    //   }
+    // }
 
     // hitSource.onopen = function (e) {
     //   console.log("OPEN state \n"+e.data);

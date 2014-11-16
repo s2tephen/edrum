@@ -30,8 +30,6 @@ var Note = function(noteObj) {
     ctx.beginPath();
     ctx.strokeStyle = "black";
     ctx.fillRect(x+width-6,y-2.5*LINE_SPREAD, 6, 3*LINE_SPREAD);
-    // ctx.moveTo(x+width,y+LINE_SPREAD/2);
-    // ctx.lineTo(x+width,y-2.5*LINE_SPREAD);
     ctx.stroke();
   }
 }
