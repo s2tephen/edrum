@@ -66,7 +66,7 @@ var Sequence = function(notes, sequenceObj) {
         this.notes[i].draw(ctx,
                       x_loc,
                       y_loc,
-                      LINE_SPREAD,
+                      LINE_SPREAD - 6,
                       LINE_SPREAD*WIDTH_MULTIPLIER - NOTE_SPACING);
         if (this.notes[i].beat == 3) {
           ctx.beginPath();

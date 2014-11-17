@@ -33,7 +33,7 @@ var Note = function(noteObj) {
     ctx.beginPath();
     for (var i = 0 * Math.PI; i < 2 * Math.PI; i += 0.01 ) {
         xPos = x + width/2 - (height/2 * Math.sin(i)) * Math.sin(0 * Math.PI) + (width/2 * Math.cos(i)) * Math.cos(0 * Math.PI);
-        yPos = y + height/2 + (width/2 * Math.cos(i)) * Math.sin(0 * Math.PI) + (height/2 * Math.sin(i)) * Math.cos(0 * Math.PI);
+        yPos = y + height/2 + 3 + (width/2 * Math.cos(i)) * Math.sin(0 * Math.PI) + (height/2 * Math.sin(i)) * Math.cos(0 * Math.PI);
 
         if (i == 0) {
             ctx.moveTo(xPos, yPos);

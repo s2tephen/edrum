@@ -5,8 +5,11 @@
 <div class="drum-name" id="drum-name0"></div>
 <div class="drum-name" id="drum-name1"></div>
 <div class="drum-name" id="drum-name2"></div>
-<button class="btn btn-default" id="back">&#8592; Back</button>
-<button class="btn btn-default" id="next">Next &#8594;</button>
+<div class="next-btn-wrapper">
+  <button class="btn btn-default" id="back">&#8592; Back</button>
+  <button class="btn btn-default" id="next">Next &#8594;</button>
+</div>
+
 
 <%= javascript_tag "var sequence = #{@sequence.to_json}" %>
 <%= javascript_tag "var notes = #{@sequence.notes.to_json}" %>
@@ -18,8 +21,8 @@
   var ctx = c.getContext("2d");
   var TOP_OFFSET = 100;
   var LINE_SPREAD = 40;
-  var WIDTH_MULTIPLIER = 1.8;
-  var NOTE_SPACING = 20;
+  var WIDTH_MULTIPLIER = 2.2;
+  var NOTE_SPACING = 30;
 
   var clefObj = new Image();
 
@@ -34,7 +37,7 @@
   //draw meter
   ctx.font="100px Arial";
   ctx.fillText(sequence.meter_top, LINE_SPREAD*3.1, LINE_SPREAD*2 + TOP_OFFSET);
-  ctx.fillRect(LINE_SPREAD*3.1, LINE_SPREAD*2 + TOP_OFFSET + 3, LINE_SPREAD*1.5, LINE_SPREAD/10);
+  ctx.fillRect(LINE_SPREAD*3.1, LINE_SPREAD*2 + TOP_OFFSET + 3, LINE_SPREAD*1.4, LINE_SPREAD/10);
   ctx.fillText(sequence.meter_bottom, LINE_SPREAD*3.1, LINE_SPREAD*4 + TOP_OFFSET);
 
   //draw lines
