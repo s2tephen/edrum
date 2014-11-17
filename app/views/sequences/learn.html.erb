@@ -2,11 +2,14 @@
 
 <canvas id="learn-canvas" width="1400" height="400"></canvas>
 
-<div class="drum-name0"></div>
-<div class="drum-name1"></div>
-<div class="drum-name2"></div>
-<button class="btn btn-default" id="back">&#8592; Back</button>
-<button class="btn btn-default" id="next">Next &#8594;</button>
+<div class="drum-name" id="drum-name0"></div>
+<div class="drum-name" id="drum-name1"></div>
+<div class="drum-name" id="drum-name2"></div>
+<div class="next-btn-wrapper">
+  <button class="btn btn-default" id="back">&#8592; Back</button>
+  <button class="btn btn-default" id="next">Next &#8594;</button>
+</div>
+
 
 <%= javascript_tag "var sequence = #{@sequence.to_json}" %>
 <%= javascript_tag "var notes = #{@sequence.notes.to_json}" %>
@@ -18,17 +21,24 @@
   var ctx = c.getContext("2d");
   var TOP_OFFSET = 100;
   var LINE_SPREAD = 40;
-  var WIDTH_MULTIPLIER = 1.5;
-  var NOTE_SPACING = 5;
+  var WIDTH_MULTIPLIER = 2.2;
+  var NOTE_SPACING = 30;
 
-    var clefObj = new Image();
+  var clefObj = new Image();
 
-    clefObj.onload = function() {
-      ctx.drawImage(clefObj, 0, TOP_OFFSET-LINE_SPREAD, LINE_SPREAD*3, 7*LINE_SPREAD);
-    };
+  clefObj.onload = function() {
+    ctx.drawImage(clefObj, 0, TOP_OFFSET-LINE_SPREAD, LINE_SPREAD*3, 7*LINE_SPREAD);
+  };
 
-    // code in different note images based on this.drum
-    clefObj.src = '/assets/g-clef.png';
+  // code in different note images based on this.drum
+  clefObj.src = '/assets/g-clef.png';
+
+  console.log(sequence);
+  //draw meter
+  ctx.font="100px Arial";
+  ctx.fillText(sequence.meter_top, LINE_SPREAD*3.1, LINE_SPREAD*2 + TOP_OFFSET);
+  ctx.fillRect(LINE_SPREAD*3.1, LINE_SPREAD*2 + TOP_OFFSET + 3, LINE_SPREAD*1.4, LINE_SPREAD/10);
+  ctx.fillText(sequence.meter_bottom, LINE_SPREAD*3.1, LINE_SPREAD*4 + TOP_OFFSET);
 
   //draw lines
   var drawLines = function() {
@@ -49,9 +59,10 @@
 
     ctx.beginPath();
     ctx.strokeStyle = "#FF0000";
-    ctx.moveTo(LINE_SPREAD*3.5 - NOTE_SPACING/2 + LINE_SPREAD*WIDTH_MULTIPLIER / 2, 0);
-    ctx.lineTo(LINE_SPREAD*3.5 - NOTE_SPACING/2 + LINE_SPREAD*WIDTH_MULTIPLIER / 2, 10*LINE_SPREAD);
+    ctx.moveTo(LINE_SPREAD*5 - NOTE_SPACING/2 + LINE_SPREAD*WIDTH_MULTIPLIER / 2, 0);
+    ctx.lineTo(LINE_SPREAD*5 - NOTE_SPACING/2 + LINE_SPREAD*WIDTH_MULTIPLIER / 2, 10*LINE_SPREAD);
     ctx.stroke();
+
   }
 
   drawLines(ctx);
@@ -95,25 +106,20 @@
     var updateDrumNames = function(current_notes) {
       for (var i = 0; i < 3; i++) {
         if (current_notes[i]) {
-          $('.drum-name' + i).text(drums[current_notes[i].drum]);
+          $('#drum-name' + i).text(drums[current_notes[i].drum]);
         } else {
-          $('.drum-name' + i).text("");
+          $('#drum-name' + i).text("");
         }
       }
     }
 
     var drawScoreAndSequence = function(cur_bar, cur_beat) {
-      ctx.clearRect(LINE_SPREAD*3.5, 0, c.width, c.height);
+      ctx.clearRect(LINE_SPREAD*4.9, 0, c.width, c.height);
       drawLines();
       sequence.draw(ctx, cur_bar, cur_beat);
     }
 
-
-    // console.log(notes);
-    // console.log(getCurrentNotes(cur_bar,cur_beat));
-
     var last_note_in_song = notes[notes.length-1];
-    console.log("last note:" + last_note_in_song.bar);
     var last_loc_in_song = increment_locs(sequence, last_note_in_song.bar, last_note_in_song.beat);
 
     drawScoreAndSequence(cur_bar, cur_beat);
@@ -123,9 +129,6 @@
       var cur_loc = increment_locs(sequence, cur_bar, cur_beat);
       cur_bar = cur_loc[0];
       cur_beat = cur_loc[1];
-
-      // console.log(getCurrentNotes(cur_bar,cur_beat));
-      console.log(last_loc_in_song);
 
       if (!(cur_bar == last_loc_in_song[0] && cur_beat >= last_loc_in_song[1])
        && !(cur_bar > last_loc_in_song[0])) {
@@ -148,8 +151,6 @@
         var cur_loc = decrement_locs(sequence, cur_bar, cur_beat);
         cur_bar = cur_loc[0];
         cur_beat = cur_loc[1];
-
-        console.log(getCurrentNotes(cur_bar,cur_beat));
 
         while (!getCurrentNotes(cur_bar,cur_beat)[0]) {
           cur_loc = decrement_locs(sequence, cur_bar, cur_beat);

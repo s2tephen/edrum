@@ -2,23 +2,18 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-.drum-name0 {
+.drum-name {
   font-size: 2em;
   font-weight: 700;
   text-align: center;
 }
 
-.drum-name1 {
-  font-size: 2em;
-  font-weight: 700;
-  text-align: center;
+.next-btn-wrapper {
+  position: fixed;
+  bottom: 100px;
+  left: 50px;
 }
 
-.drum-name2 {
-  font-size: 2em;
-  font-weight: 700;
-  text-align: center;
-}
 
 // #learn-canvas {
 //   height: 45vh;

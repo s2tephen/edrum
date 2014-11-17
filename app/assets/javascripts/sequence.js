@@ -59,16 +59,30 @@ var Sequence = function(notes, sequenceObj) {
         } else {
           var bar_offset = (this.notes[i].bar - cur_bar) * this.meter_top;
           var beat_offset = this.notes[i].beat - cur_beat;
-          x_loc = (bar_offset + beat_offset) * LINE_SPREAD*WIDTH_MULTIPLIER + LINE_SPREAD*3.5;
+          x_loc = (bar_offset + beat_offset) * LINE_SPREAD*WIDTH_MULTIPLIER + LINE_SPREAD*5;
         }
       }
       if (should_draw) {
         this.notes[i].draw(ctx,
                       x_loc,
                       y_loc,
-                      LINE_SPREAD,
+                      LINE_SPREAD - 6,
                       LINE_SPREAD*WIDTH_MULTIPLIER - NOTE_SPACING);
+        if (this.notes[i].beat == 3) {
+          ctx.beginPath();
+          ctx.strokeStyle = "black";
+          ctx.moveTo(x_loc + LINE_SPREAD*WIDTH_MULTIPLIER - NOTE_SPACING/2, TOP_OFFSET);
+          ctx.lineTo(x_loc + LINE_SPREAD*WIDTH_MULTIPLIER - NOTE_SPACING/2, LINE_SPREAD*5 + TOP_OFFSET);
+          ctx.stroke();
+        } else if (this.notes[i].beat == 0) {
+          ctx.beginPath();
+          ctx.strokeStyle = "black";
+          ctx.moveTo(x_loc - NOTE_SPACING/2, TOP_OFFSET);
+          ctx.lineTo(x_loc - NOTE_SPACING/2, LINE_SPREAD*5 + TOP_OFFSET);
+          ctx.stroke();
+        }
       }
+
     }
   }
 
