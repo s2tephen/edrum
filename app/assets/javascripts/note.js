@@ -27,9 +27,14 @@ var Note = function(noteObj) {
     // code in different note images based on this.drum
     imageObj.src = '/assets/oval-basic.png';
 
+    // draw
     ctx.beginPath();
     ctx.strokeStyle = "black";
-    ctx.fillRect(x+width-6,y-2.5*LINE_SPREAD, 6, 3*LINE_SPREAD);
+    if(this.drum == 7) {
+      ctx.fillRect(x+width-6,y+0.5*LINE_SPREAD, 6, 3*LINE_SPREAD);
+    } else {
+      ctx.fillRect(x+width-6,y-2.5*LINE_SPREAD, 6, 3*LINE_SPREAD);
+    }
     ctx.stroke();
   }
 }
