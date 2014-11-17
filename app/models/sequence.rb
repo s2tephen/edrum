@@ -13,17 +13,18 @@ class Sequence < ActiveRecord::Base
     # open sequence
     note_sequence = []
     seq = MIDI::Sequence.new()
-    seq.read(self.midi)
+    File.open(self.midi.file.file) { |f|
+        seq.read(f)
+    }
 
     # find sequence of notes from when they turn on
-    info_array = seq.tracks.last.events.select { |e| e.class == MIDI::NoteOn}
+    info_array = seq.tracks.last.events.select {|e| e.class == MIDI::NoteOn}
 
     # get the meter of the music piece
-    self.meter_top = seq.tracks.first.events.select{ |a| a.class == MIDI::TimeSig }.first.data[0]
-    self.meter_bottom = 2**seq.tracks.first.events.select{ |a| a.class == MIDI::TimeSig }.first.data[1]
+    self.meter_top = seq.tracks.first.events.select{|a| a.class == MIDI::TimeSig}.first.data[0]
+    self.meter_bottom = 2**seq.tracks.first.events.select{|a| a.class == MIDI::TimeSig}.first.data[1]
 
     info_array.each do |n|
-
       note_drum = mapping[n.note]
       note_duration = ((n.off.time_from_start - n.time_from_start) + 1) / seq.ppqn.to_f * (self.meter_bottom / 4.to_f)
       
