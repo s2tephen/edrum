@@ -108,7 +108,13 @@
       sequence.draw(ctx, cur_bar, cur_beat);
     }
 
-    console.log(getCurrentNotes(cur_bar,cur_beat));
+
+    // console.log(notes);
+    // console.log(getCurrentNotes(cur_bar,cur_beat));
+
+    var last_note_in_song = notes[notes.length-1];
+    console.log("last note:" + last_note_in_song.bar);
+    var last_loc_in_song = increment_locs(sequence, last_note_in_song.bar, last_note_in_song.beat);
 
     drawScoreAndSequence(cur_bar, cur_beat);
     updateDrumNames(getCurrentNotes(cur_bar, cur_beat));
@@ -118,12 +124,18 @@
       cur_bar = cur_loc[0];
       cur_beat = cur_loc[1];
 
-      console.log(getCurrentNotes(cur_bar,cur_beat)[0]);
+      // console.log(getCurrentNotes(cur_bar,cur_beat));
+      console.log(last_loc_in_song);
 
-      while (getCurrentNotes(cur_bar,cur_beat)[0]) {
-        cur_loc = increment_locs(sequence, cur_bar, cur_beat);
-        cur_bar = cur_loc[0];
-        cur_beat = cur_loc[1];
+      if (!(cur_bar == last_loc_in_song[0] && cur_beat >= last_loc_in_song[1])
+       && !(cur_bar > last_loc_in_song[0])) {
+        while (!getCurrentNotes(cur_bar,cur_beat)[0]) {
+          cur_loc = increment_locs(sequence, cur_bar, cur_beat);
+          cur_bar = cur_loc[0];
+          cur_beat = cur_loc[1];
+        }
+      } else {
+        decrement_locs(sequence, cur_bar, cur_beat);
       }
 
       drawScoreAndSequence(cur_bar, cur_beat);
@@ -136,15 +148,18 @@
         var cur_loc = decrement_locs(sequence, cur_bar, cur_beat);
         cur_bar = cur_loc[0];
         cur_beat = cur_loc[1];
-        ctx.clearRect(LINE_SPREAD*3.5, 0, c.width, c.height);
-        drawLines();
-        sequence.draw(ctx, cur_bar, cur_beat);
-        for (var i = 0; i < notes.length; i++) {
-          if (notes[i].bar == cur_bar && notes[i].beat == cur_beat) {
-            $('.drum-name').text(drums[notes[i].drum]);
-            break;
-          }
+
+        console.log(getCurrentNotes(cur_bar,cur_beat));
+
+        while (!getCurrentNotes(cur_bar,cur_beat)[0]) {
+          cur_loc = decrement_locs(sequence, cur_bar, cur_beat);
+          cur_bar = cur_loc[0];
+          cur_beat = cur_loc[1];
         }
+
+        drawScoreAndSequence(cur_bar, cur_beat);
+        updateDrumNames(getCurrentNotes(cur_bar, cur_beat));
+
       }
     }
 
