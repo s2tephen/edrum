@@ -19,13 +19,20 @@ class Sequence < ActiveRecord::Base
       seq.read(f)
     }
 
-    seq.tracks.each do |t|
-      info_array.concat t.events.select {|e| e.class == MIDI::NoteOn} # get notes
-      if t.events.select {|e| e.class == MIDI::TimeSig}.any?
-        self.meter_top = t.events.select {|e| e.class == MIDI::TimeSig}.first.data[0]
-        self.meter_bottom = 2**t.events.select {|e| e.class == MIDI::TimeSig}.first.data[1]
-      end
-    end
+    # find sequence of notes from when they turn on
+    info_array = seq.tracks.last.events.select {|e| e.class == MIDI::NoteOn}
+
+    # get the meter of the music piece
+    self.meter_top = seq.tracks.first.events.select{|a| a.class == MIDI::TimeSig}.first.data[0]
+    self.meter_bottom = 2**seq.tracks.first.events.select{|a| a.class == MIDI::TimeSig}.first.data[1]
+
+    # seq.tracks.each do |t|
+    #   info_array.concat t.events.select {|e| e.class == MIDI::NoteOn} # get notes
+    #   if t.events.select {|e| e.class == MIDI::TimeSig}.any?
+    #     self.meter_top = t.events.select {|e| e.class == MIDI::TimeSig}.first.data[0]
+    #     self.meter_bottom = 2**t.events.select {|e| e.class == MIDI::TimeSig}.first.data[1]
+    #   end
+    # end
 
     info_array.each do |n|
       note_drum = mapping[n.note]
@@ -104,11 +111,11 @@ class Sequence < ActiveRecord::Base
     seq = [metadata, track1, track2, track3, lengths]
 
     # write sequence to serial
-    sp = SerialPort.new('/dev/tty.usbserial-14P50042', 115200, 8, 1, SerialPort::NONE)
+    sp = SerialPort.new('/dev/tty.usbmodem1411', 115200, 8, 1, SerialPort::NONE)
     
     seq.each do |i|
-      puts 'app> ' + i
-      sp.write i
+      puts 'app> ' + i.strip
+      sp.write i.strip
     end
 
     sp.flush
