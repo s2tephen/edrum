@@ -33,6 +33,7 @@ class SequencesController < ApplicationController
       if @sequence.save
         format.html { redirect_to @sequence, notice: 'Sequence was successfully created.' }
         format.json { render :show, status: :created, location: @sequence }
+        @sequence.create_notes
       else
         format.html { render :new }
         format.json { render json: @sequence.errors, status: :unprocessable_entity }
@@ -57,10 +58,14 @@ class SequencesController < ApplicationController
   # DELETE /sequences/1
   # DELETE /sequences/1.json
   def destroy
+    notes = @sequence.notes
     @sequence.destroy
     respond_to do |format|
       format.html { redirect_to sequences_url, notice: 'Sequence was successfully destroyed.' }
       format.json { head :no_content }
+      notes.each do |n|
+        n.destroy
+      end
     end
   end
 

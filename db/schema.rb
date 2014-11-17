@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141117001732) do
+ActiveRecord::Schema.define(version: 20141117005849) do
 
   create_table "notes", force: true do |t|
     t.integer  "bar"
@@ -27,7 +27,7 @@ ActiveRecord::Schema.define(version: 20141117001732) do
   create_table "sequences", force: true do |t|
     t.string   "title"
     t.string   "artist"
-    t.integer  "default_bpm"
+    t.integer  "bpm",          default: 100
     t.integer  "meter_top"
     t.integer  "meter_bottom"
     t.integer  "bars"
