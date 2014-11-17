@@ -59,7 +59,7 @@ var Sequence = function(notes, sequenceObj) {
         } else {
           var bar_offset = (this.notes[i].bar - cur_bar) * this.meter_top;
           var beat_offset = this.notes[i].beat - cur_beat;
-          x_loc = (bar_offset + beat_offset) * LINE_SPREAD*WIDTH_MULTIPLIER + LINE_SPREAD*3.5;
+          x_loc = (bar_offset + beat_offset) * LINE_SPREAD*WIDTH_MULTIPLIER + LINE_SPREAD*5;
         }
       }
       if (should_draw) {
