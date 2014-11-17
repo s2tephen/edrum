@@ -14,15 +14,15 @@ class Sequence < ActiveRecord::Base
     note_sequence = []
     seq = MIDI::Sequence.new()
     File.open(self.midi.file.file) { |f|
-        seq.read(f)
+      seq.read(f)
     }
-
-    # find sequence of notes from when they turn on
-    info_array = seq.tracks.last.events.select {|e| e.class == MIDI::NoteOn}
-
-    # get the meter of the music piece
-    self.meter_top = seq.tracks.first.events.select{|a| a.class == MIDI::TimeSig}.first.data[0]
-    self.meter_bottom = 2**seq.tracks.first.events.select{|a| a.class == MIDI::TimeSig}.first.data[1]
+    seq.tracks.each do |t|
+      info_array.concat t.events.select {|e| e.class == MIDI::NoteOn} # get notes
+      unless (ts = t.events.select{|a| a.class == MIDI::TimeSig}).empty? # get time signature
+        self.meter_top = ts.first.data[0]
+        self.meter_bottom = 2**ts.first.data[1]
+      end
+    end
 
     info_array.each do |n|
       note_drum = mapping[n.note]
