@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141117005849) do
+ActiveRecord::Schema.define(version: 20141117021305) do
 
   create_table "notes", force: true do |t|
     t.integer  "bar"
@@ -33,7 +33,7 @@ ActiveRecord::Schema.define(version: 20141117005849) do
     t.integer  "bars"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "midi"
+    t.string   "file"
   end
 
   create_table "sessions", force: true do |t|

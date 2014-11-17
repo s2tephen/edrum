@@ -4,7 +4,7 @@ class Sequence < ActiveRecord::Base
 
   attr_accessor :input
 
-  mount_uploader :midi, MidiUploader
+  mount_uploader :file, FileUploader
 
   def create_notes
     mapping = {35 => 7, 36 => 7, 38 => 5, 40 => 5, 42 => 1, 44 => 1, 46 => 1, 49 => 0, 57 => 0, 52 => 0,
@@ -12,15 +12,18 @@ class Sequence < ActiveRecord::Base
 
     # open sequence
     note_sequence = []
+    info_array = []
     seq = MIDI::Sequence.new()
-    File.open(self.midi.file.file) { |f|
+
+    File.open(File.join(Rails.root, 'public', self.file.to_s), 'rb') { |f|
       seq.read(f)
     }
+
     seq.tracks.each do |t|
       info_array.concat t.events.select {|e| e.class == MIDI::NoteOn} # get notes
-      unless (ts = t.events.select{|a| a.class == MIDI::TimeSig}).empty? # get time signature
-        self.meter_top = ts.first.data[0]
-        self.meter_bottom = 2**ts.first.data[1]
+      if t.events.select {|e| e.class == MIDI::TimeSig}.any?
+        self.meter_top = t.events.select {|e| e.class == MIDI::TimeSig}.first.data[0]
+        self.meter_bottom = 2**t.events.select {|e| e.class == MIDI::TimeSig}.first.data[1]
       end
     end
 

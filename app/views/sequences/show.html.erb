@@ -11,8 +11,8 @@
 </p>
 
 <p>
-  <strong>Default bpm:</strong>
-  <%= @sequence.default_bpm %>
+  <strong>BPM:</strong>
+  <%= @sequence.bpm %>
 </p>
 
 <p>
@@ -23,7 +23,7 @@
 <p>
   <strong>Meter bottom:</strong>
   <%= @sequence.meter_bottom %>
-</p>
+</p>  
 
 <%= link_to 'Edit', edit_sequence_path(@sequence) %> |
 <%= link_to 'Back', sequences_path %>

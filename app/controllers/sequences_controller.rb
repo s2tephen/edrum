@@ -28,7 +28,6 @@ class SequencesController < ApplicationController
   def create
     @sequence = Sequence.new(sequence_params)
 
-
     respond_to do |format|
       if @sequence.save
         format.html { redirect_to @sequence, notice: 'Sequence was successfully created.' }
@@ -99,6 +98,6 @@ class SequencesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def sequence_params
-      params.require(:sequence).permit(:title, :artist, :default_bpm, :meter_top, :meter_bottom, :bars, :midi)
+      params.require(:sequence).permit(:title, :artist, :default_bpm, :meter_top, :meter_bottom, :bars, :file)
     end
 end

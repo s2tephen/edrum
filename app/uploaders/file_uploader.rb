@@ -1,4 +1,4 @@
-class MidiUploader < CarrierWave::Uploader::Base
+class FileUploader < CarrierWave::Uploader::Base
   storage :file
 
   def store_dir
