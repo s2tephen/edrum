@@ -68,7 +68,21 @@ var Sequence = function(notes, sequenceObj) {
                       y_loc,
                       LINE_SPREAD,
                       LINE_SPREAD*WIDTH_MULTIPLIER - NOTE_SPACING);
+        if (this.notes[i].beat == 3) {
+          ctx.beginPath();
+          ctx.strokeStyle = "black";
+          ctx.moveTo(x_loc + LINE_SPREAD*WIDTH_MULTIPLIER - NOTE_SPACING/2, TOP_OFFSET);
+          ctx.lineTo(x_loc + LINE_SPREAD*WIDTH_MULTIPLIER - NOTE_SPACING/2, LINE_SPREAD*5 + TOP_OFFSET);
+          ctx.stroke();
+        } else if (this.notes[i].beat == 0) {
+          ctx.beginPath();
+          ctx.strokeStyle = "black";
+          ctx.moveTo(x_loc - NOTE_SPACING/2, TOP_OFFSET);
+          ctx.lineTo(x_loc - NOTE_SPACING/2, LINE_SPREAD*5 + TOP_OFFSET);
+          ctx.stroke();
+        }
       }
+
     }
   }
 
