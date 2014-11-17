@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141116182417) do
+ActiveRecord::Schema.define(version: 20141117001732) do
 
   create_table "notes", force: true do |t|
     t.integer  "bar"
@@ -21,6 +21,7 @@ ActiveRecord::Schema.define(version: 20141116182417) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "sequence_id"
+    t.string   "hand"
   end
 
   create_table "sequences", force: true do |t|

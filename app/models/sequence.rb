@@ -10,14 +10,10 @@ class Sequence < ActiveRecord::Base
     mapping = {35 => 7, 36 => 7, 38 => 5, 40 => 5, 42 => 1, 44 => 1, 46 => 1, 49 => 0, 57 => 0, 52 => 0,
                55 => 0, 51 => 2, 53 => 2, 59 => 2, 41 => 6, 43 => 6, 45 => 6, 47 => 4, 48 => 3, 50 => 3 }
 
-    # initialize empty sequence of drum notes
+    # open sequence
     note_sequence = []
     seq = MIDI::Sequence.new()
-
-    # read midi file
-    File.open(File.join(Rails.root, 'app', 'assets', 'midis', 'example.mid'), 'rb') { | file |
-        seq.read(file)
-    }
+    seq.read(self.midi)
 
     # find sequence of notes from when they turn on
     info_array = seq.tracks.last.events.select { |e| e.class == MIDI::NoteOn}
