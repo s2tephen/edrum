@@ -8,13 +8,12 @@
       <th>Date Added</th>
       <th>Last Played</th>
       <th>Top Score</th>
-      <th>Actions</th>
     </tr>
   </thead>
 
   <tbody>
     <% @sequences.each do |sequence| %>
-      <tr>
+      <tr data-link="<%= sequence.id %>">
         <td><%= sequence.title %></td>
         <td><%= sequence.artist %></td>
         <td><%= sequence.created_at.strftime('%a %b %d') %></td>
@@ -22,18 +21,13 @@
           <td>n/a</td>
           <td>0%</td>
         <% else %>
-          <td><%= sequence.sessions.last.created_at.strftime('%a %b %d') %> ago</td>
+          <td><%= time_ago_in_words(sequence.sessions.last.created_at) %> ago</td>
           <td><%= sequence.sessions.maximum(:score) %>%</td>
         <% end %>
-        <td>
-          <%= link_to 'Show', sequence %>
-          <%= link_to 'Edit', edit_sequence_path(sequence) %>
-          <%= link_to 'Destroy', sequence, method: :delete, data: { confirm: 'Are you sure?' } %>
-        </td>
       </tr>
     <% end %>
   </tbody>
-</table>
+</table>  
 
 <div class="modal fade add-song" tabindex="-1" role="dialog" aria-labelledby="addSongLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">

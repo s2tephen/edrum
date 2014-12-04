@@ -5,11 +5,6 @@
 <div class="drum-name" id="drum-name0"></div>
 <div class="drum-name" id="drum-name1"></div>
 <div class="drum-name" id="drum-name2"></div>
-<div class="next-btn-wrapper">
-  <button class="btn btn-default" id="back">&#8592; Back</button>
-  <button class="btn btn-default" id="next">Next &#8594;</button>
-</div>
-
 
 <%= javascript_tag "var sequence = #{@sequence.to_json}" %>
 <%= javascript_tag "var notes = #{@sequence.notes.to_json}" %>
@@ -164,19 +159,19 @@
       }
     }
 
-    // var testSequence = drawSequence.notes // TODO: remove this test code
+    var testSequence = drawSequence.notes // TODO: remove this test code
 
-    // var hitSource = new EventSource("/serial");
-    // hitSource.onmessage = function(e) {
-    //   var hit = jQuery.parseJSON (e.data);
-    //   console.log(hit);
+    var hitSource = new EventSource("/serial");
+    hitSource.onmessage = function(e) {
+      var hit = jQuery.parseJSON (e.data);
+      console.log(hit);
 
-    //   // TODO: remove this test code
-    //   if (hit.drum == testSequence[0].drum) {
-    //     testSequence.shift();
-    //     stepSequence();
-    //   }
-    // }
+      // TODO: remove this test code
+      // if (hit.drum == testSequence[0].drum) {
+      //   testSequence.shift();
+      //   stepSequence();
+      // }
+    }
 
     // hitSource.onopen = function (e) {
     //   console.log("OPEN state \n"+e.data);
@@ -216,9 +211,5 @@
   var drawSequence = new Sequence(drawNotes, sequence);
 
   startSequence(drawSequence);
-
-
-
-
 
 </script>

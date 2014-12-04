@@ -26,12 +26,15 @@ $(document).ready(function() {
   $('.navbar-search').click(function() {
     $('body').toggleClass('search-visible');
   });
-  $("#library").tablesorter({
+  $('#library').tablesorter({
     sortList: [[0,0]],
     headers: {
       5: {
         sorter: false
       }
     }
+  });
+  $('#library tr').click(function() {
+    document.location.href = '/learn/' + $(this).attr('data-link');
   });
 });

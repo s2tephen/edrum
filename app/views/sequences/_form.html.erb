@@ -1,6 +1,6 @@
-<%= simple_form_for @sequence do |f| %>
-  <%= f.input :title, required: true %>
-  <%= f.input :artist, required: true %>
+<%= simple_form_for @sequence, html: { class: 'form-horizontal' }, defaults: { wrapper_html: { class: 'form-group' } } do |f| %>
+  <%= f.input :title, input_html: { class: 'form-control' }, required: true %>
+  <%= f.input :artist, input_html: { class: 'form-control' }, required: true %>
   <%= f.input :file, required: true %>
   <%= f.button :submit %>
 <% end %>

@@ -60,3 +60,6 @@ gem 'carrierwave'
 
 # Use simple_form for forms
 gem 'simple_form'
+
+# Use Raphael for drawing
+gem 'raphael-rails'
