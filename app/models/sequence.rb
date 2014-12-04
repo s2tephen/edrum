@@ -64,8 +64,9 @@ class Sequence < ActiveRecord::Base
       return nil
     end
 
-    length = self.notes.last.bar * self.meter_top + self.notes.last.beat #conversion rate 1ms=0.06bpm
-    metadata << bpm.to_s << ',' << (length*bpm/60*1000).to_s << ']'
+    length = self.notes.last.bar * self.meter_top + self.notes.last.beat
+    length_int = length*100 #so that indexes are integer ie so that each 100th is checked
+    metadata << bpm.to_s << ',' << (length*bpm/60000).to_s << ']'
 
     # create tracks/lengths
     track1 = '[t:'
@@ -73,13 +74,14 @@ class Sequence < ActiveRecord::Base
     track3 = '[t:'
     lengths = '[l:'
 
-    length.times do |i|
-      notes_at_beat = self.notes.where(:bar => (i / self.meter_top).floor, :beat => i % self.meter_top) #TODO: convert to ms
+    length_int.times do |i|
+      notes_at_beat = self.notes.where(:bar => (i/100 / self.meter_top).floor, :beat => i/100 % self.meter_top) #TODO: convert to ms
       (3 - notes_at_beat.length).times do
         notes_at_beat << nil
       end
 
-      ms_time_of_note = (i*bpm/60*1000).floor
+      beat_num_of_note = notes_at_beat[0].bar * self.meter_top + notes_at_beat[0].beat
+      ms_time_of_note = (beat_num_of_note*bpm/60000).floor
       if notes_at_beat[0].nil?
         track1 << '-1,'
         lengths << "#{ms_time_of_note},"
