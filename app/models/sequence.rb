@@ -30,7 +30,7 @@ class Sequence < ActiveRecord::Base
     info_array.each do |n|
       note_drum = mapping[n.note]
       note_duration = ((n.off.time_from_start - n.time_from_start) + 1) / seq.ppqn.to_f * (self.meter_bottom / 4.to_f)
-      
+
       note_bar = ((n.time_from_start / seq.ppqn.to_f) * (self.meter_bottom / 4.to_f) / self.meter_top).floor
       note_beat = ((n.time_from_start / seq.ppqn.to_f) * (self.meter_bottom / 4.to_f) % self.meter_top).floor
 
@@ -64,8 +64,8 @@ class Sequence < ActiveRecord::Base
       return nil
     end
 
-    length = self.notes.last.bar * self.meter_top + self.notes.last.beat
-    metadata << bpm.to_s << ',' << length.to_s << ']'
+    length = self.notes.last.bar * self.meter_top + self.notes.last.beat #conversion rate 1ms=0.06bpm
+    metadata << bpm.to_s << ',' << (length*bpm/60*1000).to_s << ']'
 
     # create tracks/lengths
     track1 = '[t:'
@@ -74,17 +74,18 @@ class Sequence < ActiveRecord::Base
     lengths = '[l:'
 
     length.times do |i|
-      notes_at_beat = self.notes.where(:bar => (i / self.meter_top).floor, :beat => i % self.meter_top)
+      notes_at_beat = self.notes.where(:bar => (i / self.meter_top).floor, :beat => i % self.meter_top) #TODO: convert to ms
       (3 - notes_at_beat.length).times do
         notes_at_beat << nil
       end
 
+      ms_time_of_note = (i*bpm/60*1000).floor
       if notes_at_beat[0].nil?
         track1 << '-1,'
-        lengths << '1,'
+        lengths << "#{ms_time_of_note},"
       else
         track1 << notes_at_beat[0].drum.to_s << ','
-        lengths << [notes_at_beat[0], notes_at_beat[1], notes_at_beat[2]].compact.map { |n| n.duration }.min.to_s << ','
+        lengths << "{ms_time_of_note},"
       end
 
       if notes_at_beat[1].nil?
@@ -105,7 +106,7 @@ class Sequence < ActiveRecord::Base
 
     # write sequence to serial
     sp = SerialPort.new('/dev/tty.usbserial-14P50042', 115200, 8, 1, SerialPort::NONE)
-    
+
     seq.each do |i|
       puts 'app> ' + i
       sp.write i
