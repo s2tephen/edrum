@@ -34,8 +34,8 @@ class Sequence < ActiveRecord::Base
 
     info_array.each do |n|
       note_drum = mapping[n.note]
-      note_duration = (n.off.time_from_start - n.time_from_start) / seq.ppqn.to_f * (meter_bottom / 4.to_f)
-      
+      note_duration = (n.off.time_from_start - n.time_from_start) / seq.ppqn.to_f * (self.meter_bottom / 4.to_f)
+
       note_bar = ((n.time_from_start / seq.ppqn.to_f) * (self.meter_bottom / 4.to_f) / self.meter_top).floor
       note_beat = (n.time_from_start / seq.ppqn.to_f) * (self.meter_bottom / 4.to_f) % self.meter_top
 
@@ -161,7 +161,7 @@ class Sequence < ActiveRecord::Base
     # write sequence to serial
     sp = SerialPort.new('/dev/tty.usbmodem1411', 115200, 8, 1, SerialPort::NONE)
     sp.sync = true
-    
+
     seq.each do |i|
       puts 'app> ' + i.strip
       sp.write i.strip
