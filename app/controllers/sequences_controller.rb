@@ -75,6 +75,7 @@ class SequencesController < ApplicationController
   end
 
   def start_sequence
+    print "in start sequence contorller"
     @sequence.start_seq(0,15);
   end
 
