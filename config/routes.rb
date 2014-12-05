@@ -14,7 +14,7 @@ Rails.application.routes.draw do
 
   post 'learn/:id/start' => 'sequences#start_sequence'
 
-  get 'compose' => 'sequences#compose'
+  get 'compose/:id' => 'sequences#compose'
 
   post 'compose/send' => 'sequences#compose_receive'
 
