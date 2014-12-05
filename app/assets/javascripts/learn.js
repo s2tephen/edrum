@@ -1,6 +1,7 @@
 $(document).ready(function() {
   $("#learn-play-btn").click(function(e) {
-    $.post('/learn/5/start', function(data) {
+    var id = sequence.id;
+    $.post('/learn/'+id+'/start', function(data) {
     });
   });
 });
