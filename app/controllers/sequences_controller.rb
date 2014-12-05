@@ -82,9 +82,12 @@ class SequencesController < ApplicationController
   end
 
   def compose_receive
-    puts "********************"
-    puts params[:hits]
-    puts "********************"
+    hits = params[:hits]
+    hits.each do |hit|
+      hit = hit.strip[3..-2].split(',')
+      message = {:drum => hit[0], :start => hit[1], :correct => hit[2]}
+      puts message
+    end
     render :nothing => true
   end
 

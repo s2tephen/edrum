@@ -24,22 +24,25 @@
     console.log("hit button");
     hits.push("[h:4,23643,1]"); // for testing
     if (hits.length != 0) {
-      for(var i=0; i<hits.length; i++) {
-        var hit = hits[i];
-        console.log(hit);
-        hit = hit.slice(3, hit.indexOf(']'));
-        hit = hit.split(',');
-        hit = hit.map(function(x){ return parseInt(x) });
-        console.log(hit);
-      }
+      // for(var i=0; i<hits.length; i++) {
+      //   var hit = hits[i];
+      //   console.log(hit);
+      //   hit = hit.slice(3, hit.indexOf(']'));
+      //   hit = hit.split(',');
+      //   hit = hit.map(function(x){ return parseInt(x) });
+      //   hits[i] = hit;
+      //   console.log(hit);
+      // }
+      $.ajax({
+        type : "POST",
+        url :  '/compose/send',
+        dataType: 'json',
+        contentType: 'application/json',
+        data : JSON.stringify( {"hits" : hits} )
+      });
+    } else {
+      alert("You must hit start and then hit notes first!");
     }
-    $.ajax({
-      type : "POST",
-      url :  '/compose/send',
-      dataType: 'json',
-      contentType: 'application/json',
-      data : JSON.stringify({"hits":hits})
-    });
   });
 
     // hitSource.onopen = function (e) {
