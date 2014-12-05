@@ -96,7 +96,7 @@ class Sequence < ActiveRecord::Base
         if i != beats.length - 1
           note2 = beats[i+1].first
 
-          # add a rest to fill the gap between 
+          # add a rest to fill the gap between
           if beats[i+1].any? && note1.start + note1.duration < note2.start
             lengths << ((note1.start + note1.duration).to_f / bpm * 60000).to_i.to_s << ','
             track1 << '-1,'
@@ -159,7 +159,7 @@ class Sequence < ActiveRecord::Base
     puts seq
 
     # write sequence to serial
-    sp = SerialPort.new('/dev/tty.usbmodem1411', 115200, 8, 1, SerialPort::NONE)
+    sp = SerialPort.new('/dev/tty.usbmodemfa131', 115200, 8, 1, SerialPort::NONE)
     sp.sync = true
 
     seq.each do |i|

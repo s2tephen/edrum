@@ -1,10 +1,14 @@
 <% content_for :title, "Learn" %>
 
+<button class="play-btn" id="learn-play-btn">PLAY</button>
+
 <canvas id="learn-canvas" width="1400" height="400"></canvas>
 
 <div class="drum-name" id="drum-name0"></div>
 <div class="drum-name" id="drum-name1"></div>
 <div class="drum-name" id="drum-name2"></div>
+
+<%= javascript_include_tag "learn" %>
 
 <%= javascript_tag "var sequence = #{@sequence.to_json}" %>
 <%= javascript_tag "var notes = #{@sequence.notes.to_json}" %>

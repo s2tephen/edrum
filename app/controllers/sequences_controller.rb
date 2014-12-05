@@ -1,6 +1,6 @@
 class SequencesController < ApplicationController
   include ActionController::Live
-  before_action :set_sequence, only: [:show, :edit, :update, :destroy, :learn]
+  before_action :set_sequence, only: [:show, :edit, :update, :destroy, :learn, :start_sequence]
 
   # GET /sequences
   # GET /sequences.json
@@ -72,6 +72,10 @@ class SequencesController < ApplicationController
   # GET /sequences/1.json
   def learn
     puts @sequence.notes
+  end
+
+  def start_sequence
+    @sequence.start_seq(0,15);
   end
 
   # GET /serial
