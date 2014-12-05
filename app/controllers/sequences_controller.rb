@@ -71,11 +71,21 @@ class SequencesController < ApplicationController
   # GET /sequences/1
   # GET /sequences/1.json
   def learn
-    puts @sequence.notes
   end
 
   def start_sequence
     @sequence.start_seq(0,@sequence.bpm);
+    render :nothing => true
+  end
+
+  def compose
+  end
+
+  def compose_receive
+    puts "********************"
+    puts params[:hits]
+    puts "********************"
+    render :nothing => true
   end
 
   # GET /serial

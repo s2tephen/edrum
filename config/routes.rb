@@ -14,6 +14,10 @@ Rails.application.routes.draw do
 
   post 'learn/:id/start' => 'sequences#start_sequence'
 
+  get 'compose' => 'sequences#compose'
+
+  post 'compose/send' => 'sequences#compose_receive'
+
   get 'serial/' => 'sequences#serial'
 
   # The priority is based upon order of creation: first created -> highest priority.

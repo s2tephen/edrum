@@ -1,0 +1,65 @@
+<% content_for :title, "Compose" %>
+
+<button class="play-btn" id="start-compose-btn">Start Compose</button>
+<button class="play-btn" id="stop-compose-btn">Stop Compose</button>
+
+
+<!-- <canvas id="learn-canvas" width="1400" height="400"></canvas>
+ -->
+
+<script>
+  var hits = [];
+  $("#start-compose-btn").click(function(e) {
+    hits = [];
+    var hitSource = new EventSource("/serial");
+    hitSource.onmessage = function(e) {
+      var hit = jQuery.parseJSON (e.data);
+      console.log(hit);
+      hits.push(hit);
+    }
+  });
+
+  // hit form: [h:4,23643,1]
+  $("#stop-compose-btn").click(function(e) {
+    console.log("hit button");
+    hits.push("[h:4,23643,1]"); // for testing
+    if (hits.length != 0) {
+      for(var i=0; i<hits.length; i++) {
+        var hit = hits[i];
+        console.log(hit);
+        hit = hit.slice(3, hit.indexOf(']'));
+        hit = hit.split(',');
+        hit = hit.map(function(x){ return parseInt(x) });
+        console.log(hit);
+      }
+    }
+    $.ajax({
+      type : "POST",
+      url :  '/compose/send',
+      dataType: 'json',
+      contentType: 'application/json',
+      data : JSON.stringify({"hits":hits})
+    });
+  });
+
+    // hitSource.onopen = function (e) {
+    //   console.log("OPEN state \n"+e.data);
+    // };
+
+    // hitSource.onmessage = function(e) {
+    //   var hit = jQuery.parseJSON( e.data );
+    //   console.log(hit.drum);
+
+      // TODO: start time needs to accurately correlate to bar/beat in sequence
+      // TODO: support for checking if both notes at same time are hit
+    //   if (hit.drum == drawSequence.notes[hit.start].drum) {
+    //     console.log("HIT");
+    //     stepSequence();
+    //   }
+    // };
+
+    // hitSource.onerror = function (e) {
+    //    console.log("Error State  \n\n"+e.data);
+    // };
+  // }
+</script>
