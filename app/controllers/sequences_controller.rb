@@ -1,6 +1,6 @@
 class SequencesController < ApplicationController
   include ActionController::Live
-  before_action :set_sequence, only: [:show, :edit, :update, :destroy, :learn, :start_sequence]
+  before_action :set_sequence, only: [:show, :edit, :update, :destroy, :learn, :start_learn, :start_compose]
 
   # GET /sequences
   # GET /sequences.json
@@ -73,12 +73,17 @@ class SequencesController < ApplicationController
   def learn
   end
 
-  def start_sequence
+  def start_learn
     @sequence.start_seq(0,@sequence.bpm);
     render :nothing => true
   end
 
   def compose
+  end
+
+  def start_compose
+    @sequence.start_seq(3,@sequence.bpm);
+    render :nothing => true
   end
 
   def compose_receive

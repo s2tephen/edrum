@@ -12,7 +12,9 @@ Rails.application.routes.draw do
 
   get 'learn/:id' => 'sequences#learn'
 
-  post 'learn/:id/start' => 'sequences#start_sequence'
+  post 'learn/:id/start' => 'sequences#start_learn'
+
+  post 'compose/:id/start' => 'sequences#start_compose'
 
   get 'compose/:id' => 'sequences#compose'
 
