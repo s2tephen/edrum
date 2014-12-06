@@ -50,6 +50,120 @@ class Sequence < ActiveRecord::Base
     return note_sequence
   end
 
+  # outputs notes for vexflow format
+  def vexflow
+    num_bars = self.notes.order('bar DESC').first.bar + 1
+    bars = []
+    num_bars.times do |i|
+      # assume 3 voices max
+      voices = []
+      voice1 = []
+      voice2 = []
+      voice3 = []
+
+      # buffer for excess notes
+      overflow1 = []
+      overflow2 = []
+
+      # voice1
+      self.notes.where(:bar => i).select('beat, duration').distinct.order('beat ASC').each do |n|
+        if !voice1.empty?
+          if voice1.last[0].end_beat < n.beat # fill in gap
+            # voice1 << [{:duration => n.beat - voice1.last[0].end_beat, :drum => -1}]
+            voice1.last.each do |m|
+              m.assign_attributes({ :duration => n.beat - m.beat })
+            end
+          elsif voice1.last[0].end_beat > n.beat # overlap
+            overflow_notes << n
+            next
+          end
+        else # leading rest
+          if n.beat != 0
+            voice1 << [{:duration => n.beat, :drum => -1}]
+          end
+        end
+        voice1 << self.notes.where(:bar => i, :beat => n.beat, :duration => n.duration)
+      end
+
+      # overflow => voice2
+      overflow1.each do |n|
+        if !voice2.empty?
+          if voice2.last[0].end_beat < n.beat # fill in gap
+            # voice2 << [{:duration => n.beat - voice2.last[0].end_beat, :drum => -1}]
+            voice2.last.each do |m|
+              m.assign_attributes({ :duration => n.beat - m.beat })
+            end
+          elsif voice2.last[0].end_beat > n.beat # overlap
+            overflow2 << n
+            next
+          end
+        else # leading rest
+          if n.beat != 0
+            voice2 << [{:duration => n.beat, :drum => -1}]
+          end
+        end
+        voice2 << self.notes.where(:bar => i, :beat => n.beat, :duration => n.duration)
+      end
+
+      # overflow2 => voice3
+      overflow2.each do |n|
+        if !voice3.empty?
+          if voice3.last[0].end_beat < n.beat # fill in gap
+            # voice3 << [{:duration => n.beat - voice3.last[0].end_beat, :drum => -1}]
+            voice3.last.each do |m|
+              m.assign_attributes({ :duration => n.beat - m.beat })
+            end
+          elsif voice3.last[0].end_beat > n.beat # overlap
+            overflow2 << n
+            next
+          end
+        else # leading rest
+          if n.beat != 0
+            voice3 << [{:duration => n.beat, :drum => -1}]
+          end
+        end
+        voice3 << self.notes.where(:bar => i, :beat => n.beat, :duration => n.duration)
+      end
+
+      # add trailing rests
+      if voice1.any? && voice1.last[0].end_beat != self.meter_bottom
+        voice1.last.each do |m|
+          m.assign_attributes({ :duration => self.meter_bottom - m.beat })
+        end
+        # voice1 << [{:duration => self.meter_bottom - voice1.last[0].end_beat, :drum => -1}]
+      end
+      if voice2.any? && voice2.last[0].end_beat != self.meter_bottom
+        voice2.last.each do |m|
+          m.assign_attributes({ :duration => self.meter_bottom - m.beat })
+        end
+        # voice2 << [{:duration => self.meter_bottom - voice2.last[0].end_beat, :drum => -1}]
+      end
+      if voice3.any? && voice3.last[0].end_beat != self.meter_bottom
+        # voice3 << [{:duration => self.meter_bottom - voice3.last[0].end_beat, :drum => -1}]
+        voice3.last.each do |m|
+          m.assign_attributes({ :duration => self.meter_bottom - m.beat })
+        end
+      end
+
+      # full measure rest
+      if voice1.empty?
+        voice1 << [{:duration => self.meter_bottom, :drum => -1}]
+      end
+
+      # add any voices to bar
+      voices << voice1
+      if voice2.any?
+        voices << voice2
+      end
+      if voice3.any?
+        voices << voice3
+      end
+      bars << voices
+    end
+
+    return bars
+  end
+
   # def start_seq(mode, action, bpm)
   def start_seq(mode, bpm)
     new_session = Session.create(:sequence_id => self.id, :user_id => 1)
@@ -159,7 +273,7 @@ class Sequence < ActiveRecord::Base
     puts seq
 
     # write sequence to serial
-    sp = SerialPort.new('/dev/tty.usbmodemfa131', 115200, 8, 1, SerialPort::NONE)
+    sp = SerialPort.new('/dev/tty.usbmodem1411', 115200, 8, 1, SerialPort::NONE)
     sp.sync = true
 
     seq.each do |i|
