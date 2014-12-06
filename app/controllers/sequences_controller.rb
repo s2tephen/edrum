@@ -71,11 +71,34 @@ class SequencesController < ApplicationController
   # GET /sequences/1
   # GET /sequences/1.json
   def learn
-    puts @sequence.notes
   end
 
   def start_sequence
     @sequence.start_seq(0,@sequence.bpm);
+    render :nothing => true
+  end
+
+  def compose
+  end
+
+  def compose_receive
+    @sequence = Sequence.find_by_id(params[:id])
+
+    notes = []
+
+    hits = params[:hits]
+    hits.each do |hit|
+      hit = hit.strip[3..-2].split(',')
+      message = {:drum => hit[0], :start => hit[1], :correct => hit[2]}
+      total_beat = (60000*message[:start]/@sequence.bpm).floor
+      note_bar = (total_beat/@sequence.meter_bottom).floor
+      note_beat = total_beat % @sequence.meter_bottom
+      notes << Note.create(:drum => message[:drum], :bar => note_bar, :beat => note_beat, :sequence_id => @sequence.id)
+    end
+
+    @sequence.notes = notes;
+    @sequence.save
+    render :nothing => true
   end
 
   # GET /serial
