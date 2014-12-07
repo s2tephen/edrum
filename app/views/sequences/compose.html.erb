@@ -6,10 +6,15 @@
 
 <!-- <canvas id="learn-canvas" width="1400" height="400"></canvas>
  -->
+ <%= javascript_tag "var sequence = #{@sequence.to_json}" %>
+
 
 <script>
   var hits = [];
   $("#start-compose-btn").click(function(e) {
+    console.log("start");
+    var id = sequence.id;
+    $.post('/compose/'+id+'/start', function(data) {});
     hits = [];
     var hitSource = new EventSource("/serial");
     hitSource.onmessage = function(e) {
@@ -22,20 +27,11 @@
   // hit form: [h:4,23643,1]
   $("#stop-compose-btn").click(function(e) {
     console.log("hit button");
-    hits.push("[h:4,23643,1]"); // for testing
+    // hits.push("[h:4,23643,1]"); // for testing
     if (hits.length != 0) {
-      // for(var i=0; i<hits.length; i++) {
-      //   var hit = hits[i];
-      //   console.log(hit);
-      //   hit = hit.slice(3, hit.indexOf(']'));
-      //   hit = hit.split(',');
-      //   hit = hit.map(function(x){ return parseInt(x) });
-      //   hits[i] = hit;
-      //   console.log(hit);
-      // }
       $.ajax({
         type : "POST",
-        url :  '/compose/send',
+        url :  '/compose/send/' + sequence.id,
         dataType: 'json',
         contentType: 'application/json',
         data : JSON.stringify( {"hits" : hits} )
