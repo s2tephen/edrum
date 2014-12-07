@@ -167,113 +167,121 @@ class Sequence < ActiveRecord::Base
   # def start_seq(mode, action, bpm)
   def start_seq(mode, bpm)
     new_session = Session.create(:sequence_id => self.id, :user_id => 1)
-    seq_length = self.notes.select('bar, beat').distinct.length
 
-    # create tracks/lengths
-    beats = []
-    track1 = '[t:'
-    track2 = '[t:'
-    track3 = '[t:'
-    lengths = '[l:'
+    if (mode == 3)
+      track1 = '[t:-1]'
+      track2 = '[t:-1]'
+      track3 = '[t:-1]'
+      lengths = '[l:-1]'
+      metadata = '[m:3,1]'
+    else
+      seq_length = self.notes.select('bar, beat').distinct.length
 
-    self.notes.select('bar, beat').distinct.each do |s|
-      beats << self.notes.where(:bar => s.bar, :beat => s.beat)
-    end
+      # create tracks/lengths
+      beats = []
+      track1 = '[t:'
+      track2 = '[t:'
+      track3 = '[t:'
+      lengths = '[l:'
 
-    if self.notes.first.hand.nil?
-      for i in 0..(beats.length - 1)
-        to_add = beats[i]
+      self.notes.select('bar, beat').distinct.each do |s|
+        beats << self.notes.where(:bar => s.bar, :beat => s.beat)
+      end
 
-        (3 - beats[i].length).times do
-          to_add << nil
-        end
+      if self.notes.first.hand.nil?
+        for i in 0..(beats.length - 1)
+          to_add = beats[i]
 
-        if !to_add[0].nil?
-          track1 << to_add[0].drum.to_s << ','
-        else
-          track1 << '-1,'
-        end
-        if !to_add[1].nil?
-          track2 << to_add[1].drum.to_s << ','
-        else
-          track2 << '-1,'
-        end
-        if !to_add[2].nil?
-          track3 << to_add[2].drum.to_s << ','
-        else
-          track3 << '-1,'
-        end
+          (3 - beats[i].length).times do
+            to_add << nil
+          end
 
-        note1 = beats[i].first
-        lengths << (note1.start.to_f / bpm * 60000).to_i.to_s << ','
-
-        if i != beats.length - 1
-          note2 = beats[i+1].first
-
-          # add a rest to fill the gap between
-          if beats[i+1].any? && note1.start + note1.duration < note2.start
-            lengths << ((note1.start + note1.duration).to_f / bpm * 60000).to_i.to_s << ','
+          if !to_add[0].nil?
+            track1 << to_add[0].drum.to_s << ','
+          else
             track1 << '-1,'
+          end
+          if !to_add[1].nil?
+            track2 << to_add[1].drum.to_s << ','
+          else
             track2 << '-1,'
+          end
+          if !to_add[2].nil?
+            track3 << to_add[2].drum.to_s << ','
+          else
             track3 << '-1,'
+          end
+
+          note1 = beats[i].first
+          lengths << (note1.start.to_f / bpm * 60000).to_i.to_s << ','
+
+          if i != beats.length - 1
+            note2 = beats[i+1].first
+
+            # add a rest to fill the gap between
+            if beats[i+1].any? && note1.start + note1.duration < note2.start
+              lengths << ((note1.start + note1.duration).to_f / bpm * 60000).to_i.to_s << ','
+              track1 << '-1,'
+              track2 << '-1,'
+              track3 << '-1,'
+            end
           end
         end
       end
+
+      # else
+      #   for i in 0..seq_length - 1
+      #     if beats[i].where(:hand => 'left').any?
+      #       track1 << beats[i].where(:hand => 'left').drum.to_s << ','
+      #     else
+      #       track1 << '-1,'
+      #     end
+
+      #     if beats[i].where(:hand => 'right').any?
+      #       track2 << beats[i].where(:hand => 'right').drum.to_s << ','
+      #     else
+      #       track2 << '-1,'
+      #     end
+
+      #     if beats[i].where(:hand => 'foot').any?
+      #       track1 << beats[i].where(:hand => 'foot').drum.to_s << ','
+      #     else
+      #       track3 << '-1,'
+      #     end
+
+      #     if i == beats.length - 1
+      #       lengths << beats[i].first.duration.to_s << ','
+      #     else
+      #       note1 = beats[i].first
+      #       note2 = beats[i+1].first
+
+      #       if beats[i+1].empty?
+      #         lengths << note1.duration.to_s << ','
+      #       elsif note1.start + note1.duration >= note2.start
+      #         # truncate the note at the start of the next note
+      #         lengths << (note2.start - note1.start).to_s << ','
+      #       else
+      #         # add a rest to fill the gap
+      #         lengths << beats[i].first.duration.to_s << ',' << (note2.start - (note1.start + note1.duration)).to_s << ','
+      #         track1 << '-1,'
+      #         track2 << '-1,'
+      #         track3 << '-1,'
+      #       end
+      #     end
+      #   end
+      # end
+
+      metadata = '[m:' << mode.to_s << ',' << track1.count(',').to_s << ']'
+
+      track1[-1], track2[-1], track3[-1], lengths[-1] = ']', ']', ']', ']'
+      # lengths = '[l:' << ([1]*track1.count(',')).to_s.gsub!(/\s+/,'')[1..-1]
     end
-
-    # else
-    #   for i in 0..seq_length - 1
-    #     if beats[i].where(:hand => 'left').any?
-    #       track1 << beats[i].where(:hand => 'left').drum.to_s << ','
-    #     else
-    #       track1 << '-1,'
-    #     end
-
-    #     if beats[i].where(:hand => 'right').any?
-    #       track2 << beats[i].where(:hand => 'right').drum.to_s << ','
-    #     else
-    #       track2 << '-1,'
-    #     end
-
-    #     if beats[i].where(:hand => 'foot').any?
-    #       track1 << beats[i].where(:hand => 'foot').drum.to_s << ','
-    #     else
-    #       track3 << '-1,'
-    #     end
-
-    #     if i == beats.length - 1
-    #       lengths << beats[i].first.duration.to_s << ','
-    #     else
-    #       note1 = beats[i].first
-    #       note2 = beats[i+1].first
-
-    #       if beats[i+1].empty?
-    #         lengths << note1.duration.to_s << ','
-    #       elsif note1.start + note1.duration >= note2.start
-    #         # truncate the note at the start of the next note
-    #         lengths << (note2.start - note1.start).to_s << ','
-    #       else
-    #         # add a rest to fill the gap
-    #         lengths << beats[i].first.duration.to_s << ',' << (note2.start - (note1.start + note1.duration)).to_s << ','
-    #         track1 << '-1,'
-    #         track2 << '-1,'
-    #         track3 << '-1,'
-    #       end
-    #     end
-    #   end
-    # end
-
-    metadata = '[m:' << mode.to_s << ',' << track1.count(',').to_s << ']'
-
-    track1[-1], track2[-1], track3[-1], lengths[-1] = ']', ']', ']', ']'
-    # lengths = '[l:' << ([1]*track1.count(',')).to_s.gsub!(/\s+/,'')[1..-1]
-
     seq = [metadata, track1, track2, track3, lengths]
 
     puts seq
 
     # write sequence to serial
-    sp = SerialPort.new('/dev/tty.usbmodem1411', 115200, 8, 1, SerialPort::NONE)
+    sp = SerialPort.new('/dev/tty.usbmodemfa131', 115200, 8, 1, SerialPort::NONE)
     sp.sync = true
 
     seq.each do |i|
@@ -308,5 +316,15 @@ class Sequence < ActiveRecord::Base
     sp.close
 
     return seq
+  end
+
+  def end_compose
+    # write sequence to serial
+    sp = SerialPort.new('/dev/tty.usbmodemfa131', 115200, 8, 1, SerialPort::NONE)
+    sp.sync = true
+
+    puts 'app> [e]'
+    sp.write '[e]'
+    sp.close
   end
 end

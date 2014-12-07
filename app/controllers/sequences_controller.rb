@@ -1,6 +1,6 @@
 class SequencesController < ApplicationController
   include ActionController::Live
-  before_action :set_sequence, only: [:show, :edit, :update, :destroy, :learn, :start_learn, :start_compose]
+  before_action :set_sequence, only: [:show, :edit, :update, :destroy, :learn, :start_learn, :compose, :compose_receive, :start_compose]
 
   # GET /sequences
   # GET /sequences.json
@@ -74,7 +74,7 @@ class SequencesController < ApplicationController
   end
 
   def start_learn
-    @sequence.start_seq(0,@sequence.bpm);
+    @sequence.start_seq(0, 15)  #@sequence.bpm)
     render :nothing => true
   end
 
@@ -89,20 +89,21 @@ class SequencesController < ApplicationController
   def compose_receive
     @sequence = Sequence.find_by_id(params[:id])
 
+    @sequence.notes.each do |n|
+      n.destroy
+    end
     notes = []
 
     hits = params[:hits]
     hits.each do |hit|
-      hit = hit.strip[3..-2].split(',')
-      message = {:drum => hit[0], :start => hit[1], :correct => hit[2]}
-      total_beat = (60000*message[:start]/@sequence.bpm).floor
+      total_beat = (@sequence.bpm*hit[:start].to_i/60000).floor
+      puts "total_beat****#{total_beat}"
       note_bar = (total_beat/@sequence.meter_bottom).floor
       note_beat = total_beat % @sequence.meter_bottom
-      notes << Note.create(:drum => message[:drum], :bar => note_bar, :beat => note_beat, :sequence_id => @sequence.id)
+      notes << Note.create(:drum => hit[:drum], :bar => note_bar, :beat => note_beat, :sequence_id => @sequence.id, :duration => 0.25)
     end
 
-    @sequence.notes = notes;
-    @sequence.save
+    @sequence.end_compose()
     render :nothing => true
   end
 

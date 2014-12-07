@@ -12,6 +12,7 @@
 <script>
   var hits = [];
   $("#start-compose-btn").click(function(e) {
+    console.log("start");
     var id = sequence.id;
     $.post('/compose/'+id+'/start', function(data) {});
     hits = [];
@@ -26,11 +27,11 @@
   // hit form: [h:4,23643,1]
   $("#stop-compose-btn").click(function(e) {
     console.log("hit button");
-    hits.push("[h:4,23643,1]"); // for testing
+    // hits.push("[h:4,23643,1]"); // for testing
     if (hits.length != 0) {
       $.ajax({
         type : "POST",
-        url :  '/compose/send',
+        url :  '/compose/send/' + sequence.id,
         dataType: 'json',
         contentType: 'application/json',
         data : JSON.stringify( {"hits" : hits} )

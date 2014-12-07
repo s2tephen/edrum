@@ -18,7 +18,7 @@ Rails.application.routes.draw do
 
   get 'compose/:id' => 'sequences#compose'
 
-  post 'compose/send' => 'sequences#compose_receive'
+  post 'compose/send/:id' => 'sequences#compose_receive'
 
   get 'serial/' => 'sequences#serial'
 
