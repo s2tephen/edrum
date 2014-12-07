@@ -205,6 +205,7 @@ body {
 }
 
 .main {
+  overflow-y: auto;
   height: 100%;
   .container-fluid {
     height: 100%;
@@ -270,27 +271,6 @@ p, ol, ul, td {
   height: auto !important;
   height: 100%;
   margin: 0 auto -160px;
-}
-
-.push, .footer {
-  height: 80px;
-}
-
-.footer {
-  .logo {
-    height: 24px;
-    margin-top: -5px;
-    margin-right: 10px;
-    float: left;
-    path {
-      fill: rgb(111, 84, 153); 
-    }
-  }
-
-  .copyright {
-    float: left;
-    color: rgb(153, 153, 153);
-  }
 }
 
 .form-horizontal {

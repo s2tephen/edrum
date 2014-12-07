@@ -1,25 +1,29 @@
-<% content_for :title, "Learn" %>
+<% content_for :title, "Practice" %>
 
-<button class="play-btn" id="learn-play-btn">PLAY</button>
+<%= audio_tag("tick.mp3", preload: true) %>
 
-<canvas id="sheet" width="1400" height="640">
+<button class="play-btn" id="practice-play-btn">PLAY</button>
+
+<canvas id="sheet" width="1400" height="720">
 </canvas>
 
 <div class="drum-name" id="drum-name0"></div>
 <div class="drum-name" id="drum-name1"></div>
 <div class="drum-name" id="drum-name2"></div>
 
-<%= javascript_include_tag "learn" %>
+<%= javascript_include_tag "practice" %>
 
 <%= javascript_tag "var sequence = #{@sequence.to_json}" %>
 <%= javascript_tag "var seqNotes = #{@sequence.notes.to_json}" %>
 <%= javascript_tag do %>
-  <% num_bars = @sequence.notes.order('bar DESC').first.bar + 1 %>
   var sequence = <%= raw @sequence.to_json %>;
   var bars = <%= raw @sequence.vexflow.to_json %>
 <% end %>
 
 <script>
+
+  $("#sheet").attr("height", 360 * Math.floor(sequence.bars / 2 + 0.5));
+
   var canvas = $("#sheet")[0];
   var renderer = new Vex.Flow.Renderer(canvas, Vex.Flow.Renderer.Backends.CANVAS);
 
@@ -27,20 +31,24 @@
   ctx.scale(4, 4);
 
   var staveX = 5;
-  var staveY = 0;
+  var staveY = -10;
   var staveWidth = 170;
+  var staveHeight = 90;
 
   var mapping = ["a/5","g/5","f/5","e/5","d/5","c/5","a/4","f/4"];
 
   for (i = 0; i < bars.length; i++) { // bars
     var stave;
 
-    if (i == 0) { // first bar
+    if (i % 2 == 0) {
       stave = new Vex.Flow.Stave(staveX, staveY, staveWidth);
-      stave.addClef("percussion").addTimeSignature(sequence.meter_top + "/" + sequence.meter_bottom);
+      if (i == 0) {
+        stave.addClef("percussion").addTimeSignature(sequence.meter_top + "/" + sequence.meter_bottom);
+      }
     }
     else {
       stave = new Vex.Flow.Stave(staveX + staveWidth, staveY, staveWidth);
+      staveY += staveHeight;
     }
     stave.setContext(ctx).draw();
 
