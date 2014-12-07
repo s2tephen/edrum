@@ -73,7 +73,7 @@ class SequencesController < ApplicationController
   def practice
   end
 
-  def start_learn
+  def start_practice
     @sequence.start_seq(0, 15)  #@sequence.bpm) cant use this until high speed lights issue fixed
     render :nothing => true
   end

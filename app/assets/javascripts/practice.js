@@ -7,6 +7,7 @@ $(document).ready(function() {
 
   $("#practice-play-btn").click(function(e) {
     var id = sequence.id;
+    e.stopImmediatePropagation();
     $.post('/practice/'+id+'/start', function(data) {});
     tick.play();
   });
