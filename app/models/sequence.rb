@@ -164,15 +164,15 @@ class Sequence < ActiveRecord::Base
   end
 
   # def start_seq(mode, action, bpm)
-  def start_seq(mode, bpm)
+  def start_seq(mode, bpm, sticking)
     new_session = Session.create(:sequence_id => self.id, :user_id => 1)
 
-    if (mode == 3)
+    if (mode == 5) # compose
       track1 = '[t:-1]'
       track2 = '[t:-1]'
       track3 = '[t:-1]'
       lengths = '[l:-1]'
-      metadata = '[m:3,1]'
+      metadata = '[m:3,1,0]'
     else
       seq_length = self.notes.select('bar, beat').distinct.length
 
@@ -270,7 +270,7 @@ class Sequence < ActiveRecord::Base
       #   end
       # end
 
-      metadata = '[m:' << mode.to_s << ',' << track1.count(',').to_s << ']'
+      metadata = '[m:' << mode.to_s << ',' << track1.count(',').to_s << ',' << sticking.to_s << ']'
 
       track1[-1], track2[-1], track3[-1], lengths[-1] = ']', ']', ']', ']'
       # lengths = '[l:' << ([1]*track1.count(',')).to_s.gsub!(/\s+/,'')[1..-1]

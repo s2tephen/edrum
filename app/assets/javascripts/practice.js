@@ -40,12 +40,27 @@ $(document).ready(function() {
     if (!isPlaying) {
       var id = sequence.id;
       if ($(this).hasClass('play-btn')) {
-        $.post('/practice/'+id+'/start', function(data) {});
+        var demoMode = false;
+      } else {
+        var demoMode = true;
       }
+      $.ajax({
+        type : "POST",
+        url :  '/practice/' + sequence.id + '/start',
+        dataType: 'json',
+        contentType: 'application/json',
+        data : JSON.stringify({
+          demoMode : demoMode,
+          playBPM : $('#bpmInput').val(),
+          enableLoop : $('#enableLoop').is(':checked'),
+          enableStepByStep : $('#enableStepByStep').is(':checked'),
+          enableSticking : $('#enableSticking').is(':checked')
+        })
+      });
 
       if ($('#enableMetronome').is(':checked'))
-        scheduleTick(); 
-      
+        scheduleTick();
+
       $('.song-info').addClass('playing');
       $('.song-settings').addClass('playing');
       $('.play-btn i').removeClass('fa-play').addClass('fa-stop');
@@ -55,8 +70,7 @@ $(document).ready(function() {
       animateLine(0);
       isPlaying = true;
       $('.song-settings').animate({ borderLeftWidth: '1440px' }, 60000 * sequence.bars * sequence.meter_bottom / playBPM , 'linear');
-    }
-    else {
+    } else {
       window.clearInterval(timer);
       $('.main').stop(true, false);
       $('.marker-current').stop(true, false);

@@ -74,7 +74,25 @@ class SequencesController < ApplicationController
   end
 
   def start_practice
-    @sequence.start_seq(0, 15)  #@sequence.bpm) cant use this until high speed lights issue fixed
+    if params[:demoMode]
+      mode = 0 #DEMO mode
+    elsif params[:enableStepByStep] and not params[:enableLoop]
+      mode = 1  #STEP BY STEP
+    elsif not params[:enableLoop]
+      mode = 2 #PRACTICE
+    elsif params[:enableLoop] and params[:enableStepByStep]
+      mode = 3 #STEP BY STEP LOOP
+    elsif params[:enableLoop]
+      mode = 4 #PRACTICE LOOP
+    end
+
+    if params[:enableSticking]
+      sticking = 1
+    else
+      sticking = 0
+    end
+
+    @sequence.start_seq(mode, params[:playBPM].to_i, sticking)  #@sequence.bpm) cant use this until high speed lights issue fixed
     render :nothing => true
   end
 
@@ -82,7 +100,7 @@ class SequencesController < ApplicationController
   end
 
   def start_compose
-    @sequence.start_seq(3,@sequence.bpm);
+    @sequence.start_seq(5,@sequence.bpm);
     render :nothing => true
   end
 
