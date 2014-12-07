@@ -5,6 +5,11 @@ $(document).ready(function() {
   var timer;
   var currTime = 0.0;
   var isPlaying = false;
+  var demoMode = false;
+  var stepByStepMode = false;
+  var notesToPlay = [];
+  var isLooping = false;
+  var showSticking = false;
   var playBPM = $('#bpmInput').val();
 
   function scheduleTick() {
@@ -30,8 +35,11 @@ $(document).ready(function() {
     else {
       $('.note-feedback').text('good').css('color', 'rgb(39, 174, 96)');
     }
-    $('.note-feedback').css('opacity', 1);
-    setTimeout(function() { $('.note-feedback').animate({ opacity: 0 }, 100); }, 750);
+    $('.note-feedback').animate({
+      opacity: 1
+    }, 10, function() {
+      $(this).animate({ opacity: 0 }, 150);
+    });
   }
 
   $("#practice-play-btn, #practice-listen-btn").click(function(e) {
@@ -40,9 +48,9 @@ $(document).ready(function() {
     if (!isPlaying) {
       var id = sequence.id;
       if ($(this).hasClass('play-btn')) {
-        var demoMode = false;
+        demoMode = false;
       } else {
-        var demoMode = true;
+        demoMode = true;
       }
       $.ajax({
         type : "POST",
@@ -61,14 +69,35 @@ $(document).ready(function() {
       if ($('#enableMetronome').is(':checked'))
         scheduleTick();
 
+      if ($('#enableLoop').is(':checked')) {
+        isLooping = true;
+      }
+      else {
+        isLooping = false;
+      }
+
+      if ($('#enableStepByStep').is(':checked')) {
+        stepByStepMode = true;
+      }
+      else {
+        stepByStepMode = false;
+      }
+
+      if ($('#enableSticking').is(':checked')) {
+        showSticking = true;
+      }
+      else {
+        showSticking = false;
+      }
+
       $('.song-info').addClass('playing');
       $('.song-settings').addClass('playing');
       $('.play-btn i').removeClass('fa-play').addClass('fa-stop');
 
       $('.marker').remove();
       $('.wrapper').append('<div class="marker marker-current" style="top: 235px; width: 200px;"></div>');
-      animateLine(0);
       isPlaying = true;
+      animateLine(0);
     } else {
       window.clearInterval(timer);
       $('.main').stop(true, false);
@@ -88,7 +117,7 @@ $(document).ready(function() {
 
   function animateLine(lineNum) {
     if (lineNum == -1) {
-      // lead in
+      // TODO: lead in
     }
     else if (lineNum == 0) {
       $('.song-settings').animate({ borderLeftWidth: '1440px' }, 60000 * sequence.bars * sequence.meter_bottom / playBPM , 'linear');
@@ -115,18 +144,29 @@ $(document).ready(function() {
         });
       }
     }
-    else if (lineNum == Math.floor(sequence.bars / 2 + 0.5)) {
-      window.clearInterval(timer);
-      $('.main').animate({
-        scrollTop: '0px'
-      }, function() {
+    else if (lineNum == Math.floor(sequence.bars / 2 + 0.5)) { // end song
+      if (isLooping) {
         $('.marker').remove();
-      });
-      $('.song-info').removeClass('playing');
-      $('.song-settings').css('border-left-width', '0').removeClass('playing');
-      $('.play-btn i').removeClass('fa-stop').addClass('fa-play');
-      isPlaying = false;
-      return;
+        $('.song-settings').css('border-left-width', '0');
+        $('.main').scrollTop(0);
+        $('.wrapper').append('<div class="marker marker-current" style="top: 235px; width: 200px;"></div>');
+        animateLine(0);
+      }
+      else {
+        $('.main').animate({
+          scrollTop: '0px'
+        }, function() {
+          $('.marker').remove();
+        });
+
+        isPlaying = false;
+
+        window.clearInterval(timer);
+        $('.song-info').removeClass('playing');
+        $('.song-settings').css('border-left-width', '0').removeClass('playing');
+        $('.play-btn i').removeClass('fa-stop').addClass('fa-play');
+        return;
+      }
     }
     else {
       // instantaneous change
@@ -145,4 +185,14 @@ $(document).ready(function() {
       }, 120000 / playBPM * sequence.meter_bottom, 'linear', function() { animateLine(lineNum + 1); });
     }
   }
+
+  // TODO: display feedback
+  var hitSource = new EventSource("/serial");
+  hitSource.onmessage = function(e) {
+    var hit = jQuery.parseJSON (e.data);
+    if (isPlaying && stepByStepMode) { //step by step
+    }
+    else if (isPlaying && !demoMode) { // practice
+    }
+  };
 });

@@ -71,6 +71,7 @@
   ctx.scale(4, 4);
 
   var mapping = ["a/5","g/5","f/5","e/5","d/5","c/5","a/4","f/4"];
+  var staves = [];
 
   for (i = 0; i < bars.length; i++) { // bars
     var stave;
@@ -165,6 +166,7 @@
     for (n = 0; n < beams.length; n++) {
       beams[n].setContext(ctx).draw();
     }
+    staves.push(stave);
   }
 
   function vexDuration(duration) {

@@ -126,22 +126,49 @@ class Sequence < ActiveRecord::Base
 
       # add trailing rests
       if voice1.any? && voice1.last[0].end_beat != self.meter_bottom
+        extraRests = []
         voice1.last.each do |m|
-          m.assign_attributes({ :duration => self.meter_bottom - m.beat })
+          if self.meter_bottom - m.beat > 1
+            m.assign_attributes({ :duration => 1 })
+            extraRests[0] = {:duration => self.meter_bottom - m.end_beat, :drum => -1}
+          else
+            m.assign_attributes({ :duration => self.meter_bottom - m.beat })
+          end
+        end
+        if extraRests.any?
+          voice1 << extraRests
         end
         # voice1 << [{:duration => self.meter_bottom - voice1.last[0].end_beat, :drum => -1}]
       end
       if voice2.any? && voice2.last[0].end_beat != self.meter_bottom
+        extraRests = []
         voice2.last.each do |m|
-          m.assign_attributes({ :duration => self.meter_bottom - m.beat })
+          if self.meter_bottom - m.beat > 1
+            m.assign_attributes({ :duration => 1 })
+            extraRests[0] = {:duration => self.meter_bottom - m.end_beat, :drum => -1}
+          else
+            m.assign_attributes({ :duration => self.meter_bottom - m.beat })
+          end
+        end
+        if extraRests.any?
+          voice2 << extraRests
         end
         # voice2 << [{:duration => self.meter_bottom - voice2.last[0].end_beat, :drum => -1}]
       end
       if voice3.any? && voice3.last[0].end_beat != self.meter_bottom
-        # voice3 << [{:duration => self.meter_bottom - voice3.last[0].end_beat, :drum => -1}]
+        extraRests = []
         voice3.last.each do |m|
-          m.assign_attributes({ :duration => self.meter_bottom - m.beat })
+          if self.meter_bottom - m.beat > 1
+            m.assign_attributes({ :duration => 1 })
+            extraRests = {:duration => self.meter_bottom - m.end_beat, :drum => -1}
+          else
+            m.assign_attributes({ :duration => self.meter_bottom - m.beat })
+          end
         end
+        if extraRests.any?
+          voice3 << extraRests
+        end
+        # voice3 << [{:duration => self.meter_bottom - voice3.last[0].end_beat, :drum => -1}]
       end
 
       # full measure rest
