@@ -2,7 +2,8 @@
 
 <button class="play-btn" id="learn-play-btn">PLAY</button>
 
-<canvas id="learn-canvas" width="1400" height="400"></canvas>
+<canvas id="sheet" width="1400" height="640">
+</canvas>
 
 <div class="drum-name" id="drum-name0"></div>
 <div class="drum-name" id="drum-name1"></div>
@@ -11,209 +12,100 @@
 <%= javascript_include_tag "learn" %>
 
 <%= javascript_tag "var sequence = #{@sequence.to_json}" %>
-<%= javascript_tag "var notes = #{@sequence.notes.to_json}" %>
+<%= javascript_tag "var seqNotes = #{@sequence.notes.to_json}" %>
+<%= javascript_tag do %>
+  <% num_bars = @sequence.notes.order('bar DESC').first.bar + 1 %>
+  var sequence = <%= raw @sequence.to_json %>;
+  var bars = <%= raw @sequence.vexflow.to_json %>
+<% end %>
 
 <script>
-  var drums = ['Crash Cymbal', 'Hi-Hat', 'Ride Cymbal', 'Left Tom', 'Right Tom', 'Snare Drum', 'Floor Tom', 'Bass Drum'];
+  var canvas = $("#sheet")[0];
+  var renderer = new Vex.Flow.Renderer(canvas, Vex.Flow.Renderer.Backends.CANVAS);
 
-  var c = document.getElementById("learn-canvas");
-  var ctx = c.getContext("2d");
-  var TOP_OFFSET = 100;
-  var LINE_SPREAD = 40;
-  var WIDTH_MULTIPLIER = 2.2;
-  var NOTE_SPACING = 30;
+  var ctx = renderer.getContext();
+  ctx.scale(4, 4);
 
-  var clefObj = new Image();
+  var staveX = 5;
+  var staveY = 0;
+  var staveWidth = 170;
 
-  clefObj.onload = function() {
-    ctx.drawImage(clefObj, 0, TOP_OFFSET-LINE_SPREAD, LINE_SPREAD*3, 7*LINE_SPREAD);
-  };
+  var mapping = ["a/5","g/5","f/5","e/5","d/5","c/5","a/4","f/4"];
 
-  // code in different note images based on this.drum
-  clefObj.src = '/assets/g-clef.png';
+  for (i = 0; i < bars.length; i++) { // bars
+    var stave;
 
-  console.log(sequence);
-  //draw meter
-  ctx.font="100px Arial";
-  ctx.fillText(sequence.meter_top, LINE_SPREAD*3.1, LINE_SPREAD*2 + TOP_OFFSET);
-  ctx.fillRect(LINE_SPREAD*3.1, LINE_SPREAD*2 + TOP_OFFSET + 3, LINE_SPREAD*1.4, LINE_SPREAD/10);
-  ctx.fillText(sequence.meter_bottom, LINE_SPREAD*3.1, LINE_SPREAD*4 + TOP_OFFSET);
-
-  //draw lines
-  var drawLines = function() {
-    for (var i=0; i < 6*LINE_SPREAD; i+=LINE_SPREAD) {
-      ctx.beginPath();
-      ctx.strokeStyle = "black";
-      ctx.lineWidth = 2.0;
-      ctx.moveTo(0,i+TOP_OFFSET);
-      ctx.lineTo(c.width,i+TOP_OFFSET);
-      ctx.stroke();
+    if (i == 0) { // first bar
+      stave = new Vex.Flow.Stave(staveX, staveY, staveWidth);
+      stave.addClef("percussion").addTimeSignature(sequence.meter_top + "/" + sequence.meter_bottom);
     }
-
-    ctx.beginPath();
-    ctx.strokeStyle = "black";
-    ctx.moveTo(0,TOP_OFFSET);
-    ctx.lineTo(0,(5*LINE_SPREAD)+TOP_OFFSET);
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.strokeStyle = "#FF0000";
-    ctx.moveTo(LINE_SPREAD*5 - NOTE_SPACING/2 + LINE_SPREAD*WIDTH_MULTIPLIER / 2, 0);
-    ctx.lineTo(LINE_SPREAD*5 - NOTE_SPACING/2 + LINE_SPREAD*WIDTH_MULTIPLIER / 2, 10*LINE_SPREAD);
-    ctx.stroke();
-
-  }
-
-  drawLines(ctx);
-
-  // var testNotes = [];
-  // for (var i = 0; i < 55; i++) {
-  //   testNotes.push(new Note(i%7, 1));
-  // }
-
-  // var testSequence = new Sequence(testNotes);
-
-  var increment_locs = function(sequence, cur_bar, cur_beat) {
-    if (cur_beat == 3 /*sequence.meter_top - 1*/) {
-      return [cur_bar + 1, 0];
-    } else {
-      return [cur_bar, cur_beat + 1];
+    else {
+      stave = new Vex.Flow.Stave(staveX + staveWidth, staveY, staveWidth);
     }
-  }
-  var decrement_locs = function(sequence, cur_bar, cur_beat) {
-    if (cur_beat == 0) {
-      return [cur_bar - 1, 3 /*sequence.meter_top - 1*/];
-    } else {
-      return [cur_bar, cur_beat - 1];
-    }
-  }
+    stave.setContext(ctx).draw();
 
-  var startSequence = function(sequence) {
-    var cur_bar = 0;
-    var cur_beat = 0;
-
-    var getCurrentNotes = function(cur_bar, cur_beat) {
-      var current_notes = [];
-      for (var i = 0; i < notes.length; i++) {
-        if (notes[i].bar == cur_bar && notes[i].beat == cur_beat) {
-          current_notes.push(notes[i]);
+    var voices = [];
+    for (j = 0; j < bars[i].length; j++) { // voices
+      var notes = [];
+      var noteBuffer = []; // used to separate quarter notes
+      for (k = 0; k < bars[i][j].length; k++) { // note groups
+        // separate into beam/no beam
+        if (noteBuffer.length == 0) {
+          noteBuffer.push(bars[i][j][k][0].duration < 1) // true if beam, false otherwise
         }
-      }
-      return current_notes;
-    }
-
-    var updateDrumNames = function(current_notes) {
-      for (var i = 0; i < 3; i++) {
-        if (current_notes[i]) {
-          $('#drum-name' + i).text(drums[current_notes[i].drum]);
-        } else {
-          $('#drum-name' + i).text("");
-        }
-      }
-    }
-
-    var drawScoreAndSequence = function(cur_bar, cur_beat) {
-      ctx.clearRect(LINE_SPREAD*4.9, 0, c.width, c.height);
-      drawLines();
-      sequence.draw(ctx, cur_bar, cur_beat);
-    }
-
-    var last_note_in_song = notes[notes.length-1];
-    var last_loc_in_song = increment_locs(sequence, last_note_in_song.bar, last_note_in_song.beat);
-
-    drawScoreAndSequence(cur_bar, cur_beat);
-    updateDrumNames(getCurrentNotes(cur_bar, cur_beat));
-
-    var stepSequence = function() {
-      var cur_loc = increment_locs(sequence, cur_bar, cur_beat);
-      cur_bar = cur_loc[0];
-      cur_beat = cur_loc[1];
-
-      if (!(cur_bar == last_loc_in_song[0] && cur_beat >= last_loc_in_song[1])
-       && !(cur_bar > last_loc_in_song[0])) {
-        while (!getCurrentNotes(cur_bar,cur_beat)[0]) {
-          cur_loc = increment_locs(sequence, cur_bar, cur_beat);
-          cur_bar = cur_loc[0];
-          cur_beat = cur_loc[1];
-        }
-      } else {
-        decrement_locs(sequence, cur_bar, cur_beat);
-      }
-
-      drawScoreAndSequence(cur_bar, cur_beat);
-      updateDrumNames(getCurrentNotes(cur_bar, cur_beat));
-
-    }
-
-    var stepBackSequence = function() {
-      if (!(cur_bar == 0 && cur_beat == 0)) {
-        var cur_loc = decrement_locs(sequence, cur_bar, cur_beat);
-        cur_bar = cur_loc[0];
-        cur_beat = cur_loc[1];
-
-        while (!getCurrentNotes(cur_bar,cur_beat)[0]) {
-          cur_loc = decrement_locs(sequence, cur_bar, cur_beat);
-          cur_bar = cur_loc[0];
-          cur_beat = cur_loc[1];
+        else if (bars[i][j][k][0].duration < 1 != noteBuffer[0] || sequence.meter_bottom*noteBuffer.slice(1).reduce(function(p, c, i, a) { return p + 1/c.duration }, 0) == 1)  {
+          notes.push(noteBuffer);
+          noteBuffer = [bars[i][j][k][0].duration < 1];
         }
 
-        drawScoreAndSequence(cur_bar, cur_beat);
-        updateDrumNames(getCurrentNotes(cur_bar, cur_beat));
-
+        // construct stave note
+        if (bars[i][j][k].length == 1) { // single note
+          var currNote = bars[i][j][k][0];
+          if (currNote.drum == -1) { // rest
+            if (currNote.duration * 100 % 3 == 0) {
+              noteBuffer.push(new Vex.Flow.StaveNote({ keys: ["b/4"], duration: vexDuration(currNote.duration/3) + "r" }));
+              noteBuffer.push(new Vex.Flow.StaveNote({ keys: ["b/4"], duration: vexDuration(2*currNote.duration/3) + "r" }));
+            }
+            else {
+              noteBuffer.push(new Vex.Flow.StaveNote({ keys: ["b/4"], duration: vexDuration(currNote.duration) + "r" }));
+            }
+          }
+          else { // note
+            noteBuffer.push(new Vex.Flow.StaveNote({ keys: [mapping[currNote.drum]], duration: vexDuration(currNote.duration) }));
+          }
+        }
+        else { // chord
+          var keys = [];
+          var currNotes = bars[i][j][k];
+          for (l = 0; l < currNotes.length; l++) {
+            keys.push(mapping[currNotes[l].drum]);
+          }
+          noteBuffer.push(new Vex.Flow.StaveNote({ keys: keys, duration: vexDuration(currNotes[0].duration) }));
+        }
       }
+      notes.push(noteBuffer);
+      voices.push(notes);
     }
 
-    var testSequence = drawSequence.notes // TODO: remove this test code
+    // draw the bar
+    var beams = [];
 
-    var hitSource = new EventSource("/serial");
-    hitSource.onmessage = function(e) {
-      var hit = jQuery.parseJSON (e.data);
-      console.log(hit);
-
-      // TODO: remove this test code
-      // if (hit.drum == testSequence[0].drum) {
-      //   testSequence.shift();
-      //   stepSequence();
-      // }
+    for (m = 0; m < voices.length; m++) {
+      for (n = 0; n < voices[m].length; n++) {
+        if (voices[m][n].shift()) { // beam me up, scotty
+          beams.push(new Vex.Flow.Beam(voices[m][n]));
+        }
+      }
+      voices[m] = [].concat.apply([], voices[m]); // flatten bar
+      Vex.Flow.Formatter.FormatAndDraw(ctx, stave, voices[m]);
     }
 
-    // hitSource.onopen = function (e) {
-    //   console.log("OPEN state \n"+e.data);
-    // };
-
-    // hitSource.onmessage = function(e) {
-    //   var hit = jQuery.parseJSON( e.data );
-    //   console.log(hit.drum);
-
-      // TODO: start time needs to accurately correlate to bar/beat in sequence
-      // TODO: support for checking if both notes at same time are hit
-    //   if (hit.drum == drawSequence.notes[hit.start].drum) {
-    //     console.log("HIT");
-    //     stepSequence();
-    //   }
-    // };
-
-    // hitSource.onerror = function (e) {
-    //    console.log("Error State  \n\n"+e.data);
-    // };
-
-    $("#next").click(function(evt) {
-      stepSequence();
-    });
-    $("#back").click(function(evt) {
-      stepBackSequence();
-    });
+    for (n = 0; n < beams.length; n++) {
+      beams[n].setContext(ctx).draw();
+    }
   }
 
-
-
-  var drawNotes = [];
-  for (var i = 0; i < notes.length; i++) {
-    drawNotes.push(new Note(notes[i]));
+  function vexDuration(duration) {
+    return (sequence.meter_bottom / duration) + "";
   }
-
-  var drawSequence = new Sequence(drawNotes, sequence);
-
-  startSequence(drawSequence);
-
 </script>
