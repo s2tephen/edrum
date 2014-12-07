@@ -15,6 +15,7 @@
 //= require turbolinks
 //= require bootstrap
 //= require_tree .
+//= stub practice
 
 $(document).ready(function() {
   $('.navbar-menu').click(function() {
