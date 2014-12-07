@@ -10,9 +10,9 @@ Rails.application.routes.draw do
 
   root 'sequences#index'
 
-  get 'learn/:id' => 'sequences#learn'
+  get 'practice/:id' => 'sequences#practice'
 
-  post 'learn/:id/start' => 'sequences#start_learn'
+  post 'practice/:id/start' => 'sequences#start_practice'
 
   post 'compose/:id/start' => 'sequences#start_compose'
 

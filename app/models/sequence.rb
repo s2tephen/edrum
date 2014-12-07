@@ -52,9 +52,8 @@ class Sequence < ActiveRecord::Base
 
   # outputs notes for vexflow format
   def vexflow
-    num_bars = self.notes.order('bar DESC').first.bar + 1
     bars = []
-    num_bars.times do |i|
+    self.bars.times do |i|
       # assume 3 voices max
       voices = []
       voice1 = []
