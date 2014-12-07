@@ -23,7 +23,7 @@ html, body {
 body {
   box-sizing: content-box !important;
   overflow: hidden;
-  font-family: "Avenir Next";
+  font-family: "Avenir Next", "Avenir", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
   transition: margin 0.3s ease-out, padding 0.3s ease-out;
 }
 
@@ -206,6 +206,7 @@ body {
 
 .main {
   overflow-y: auto;
+  overflow-x: hidden;
   height: 100%;
   .container-fluid {
     height: 100%;
@@ -225,19 +226,22 @@ p, ol, ul, td {
     text-transform: uppercase;
     font-weight: 400;
     color: rgb(153, 153, 153);
+    .tablesorter-header-inner {
+      display: inline;
+    }
     &:after {
       font-family: "FontAwesome";
       content: "\f0dc";
       font-size: 0.9em;
       margin-left: 10px;
     }
-    &.headerSortUp {
+    &.tablesorter-headerAsc {
       color: rgb(0, 0, 0);
       &:after {
         content: "\f0de";
       }
     }
-    &.headerSortDown {
+    &.tablesorter-headerDesc {
       color: rgb(0, 0, 0);
       &:after {
         content: "\f0dd";

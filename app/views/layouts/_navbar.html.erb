@@ -10,12 +10,14 @@
       <a class="navbar-brand">
         <%= yield(:title) %>
       </a>
-      <button type="button" class="navbar-toggle navbar-add" data-toggle="modal" data-target=".add-song">
-        <i class="fa fa-plus"></i>
-      </button>
-      <button type="button" class="navbar-toggle navbar-search">
-        <i class="fa fa-search"></i>
-      </button>
+      <% if yield(:title) == 'Library' %>
+        <button type="button" class="navbar-toggle navbar-add" data-toggle="modal" data-target=".add-song">
+          <i class="fa fa-plus"></i>
+        </button>
+        <button type="button" class="navbar-toggle navbar-search">
+          <i class="fa fa-search"></i>
+        </button>
+      <% end %>
     </div>
   </div>
 </nav>

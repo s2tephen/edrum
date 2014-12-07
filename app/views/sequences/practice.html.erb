@@ -1,6 +1,39 @@
 <% content_for :title, "Practice" %>
 
-<button class="play-btn" id="practice-play-btn">PLAY</button>
+<div class="song-info">
+  <h1><%= @sequence.title %></h1>
+  <h3><%= @sequence.artist %></h3>
+  <h1 class="note-feedback">Good</h1>
+  <button class="listen-btn" id="practice-listen-btn"><i class="fa fa-headphones"></i></button>
+  <button class="play-btn" id="practice-play-btn"><i class="fa fa-play"></i></button>
+  <form class="song-settings form-inline">
+    <div class="form-fields">
+      <div class="header">
+        <i class="fa fa-gear"></i> Settings
+      </div>
+      <div class="bpm">
+        <div class="input-group col-sm-1">
+          <input type="text" class="form-control" id="bpmInput" placeholder="120">
+          <div class="input-group-addon">BPM</div>
+        </div>
+      </div>
+      <div class="checkboxes">
+        <label class="checkbox-inline">
+          <input type="checkbox" id="enableMetronome" value="metronome" checked> Metronome
+        </label>
+        <label class="checkbox-inline">
+          <input type="checkbox" id="enableLoop" value="loop"> Loop song
+        </label>
+        <label class="checkbox-inline">
+          <input type="checkbox" id="enableStepByStep" value="stepbystep"> Step-by-step
+        </label>
+        <label class="checkbox-inline">
+          <input type="checkbox" id="enableSticking" value="sticking" disabled> Sticking <span class="sticking">no info available for this song</span>
+        </label>
+      </div>
+    </div>
+  </form>
+</div>
 
 <canvas id="sheet" width="1400" height="720">
 </canvas>
@@ -28,9 +61,9 @@
   var ctx = renderer.getContext();
   ctx.scale(4, 4);
 
-  var staveX = 5;
+  var staveX = 0;
   var staveY = -10;
-  var staveWidth = 170;
+  var staveWidth = 174.5;
   var staveHeight = 90;
 
   var mapping = ["a/5","g/5","f/5","e/5","d/5","c/5","a/4","f/4"];

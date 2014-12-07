@@ -16,12 +16,12 @@
       <tr data-link="<%= sequence.id %>">
         <td><%= sequence.title %></td>
         <td><%= sequence.artist %></td>
-        <td><%= sequence.created_at.strftime('%a %b %d') %></td>
+        <td data-text="<%= sequence.created_at %>"><%= sequence.created_at.strftime('%a %b %d') %></td>
         <% if sequence.sessions.empty? %>
-          <td>n/a</td>
+          <td data-text="1940-07-07">n/a</td>
           <td>0%</td>
         <% else %>
-          <td><%= time_ago_in_words(sequence.sessions.last.created_at) %> ago</td>
+          <td data-text="<%= sequence.sessions.last.created_at %>"><%= time_ago_in_words(sequence.sessions.last.created_at) %> ago</td>
           <td><%= sequence.sessions.maximum(:score) %>%</td>
         <% end %>
       </tr>

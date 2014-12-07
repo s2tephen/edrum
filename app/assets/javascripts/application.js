@@ -28,13 +28,20 @@ $(document).ready(function() {
   });
   $('#library').tablesorter({
     sortList: [[0,0]],
+    dateFormat : 'yyyymmdd',
     headers: {
+      3: {
+        sorter: 'shortDate'
+      },
+      4: {
+        sorter: 'shortDate'
+      },
       5: {
         sorter: false
       }
     }
   });
-  $('#library tr').click(function() {
-    document.location.href = '/learn/' + $(this).attr('data-link');
+  $('#library tbody tr').click(function() {
+    document.location.href = '/practice/' + $(this).attr('data-link');
   });
 });
