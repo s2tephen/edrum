@@ -69,7 +69,6 @@ $(document).ready(function() {
       $('.wrapper').append('<div class="marker marker-current" style="top: 235px; width: 200px;"></div>');
       animateLine(0);
       isPlaying = true;
-      $('.song-settings').animate({ borderLeftWidth: '1440px' }, 60000 * sequence.bars * sequence.meter_bottom / playBPM , 'linear');
     } else {
       window.clearInterval(timer);
       $('.main').stop(true, false);
@@ -88,14 +87,33 @@ $(document).ready(function() {
   });
 
   function animateLine(lineNum) {
-    if (lineNum == 0) {
-      $('.marker-current').animate({
-        width: '700px'
-      }, 60000 / playBPM * sequence.meter_bottom, 'linear', function() {
-        $(this).animate({
+    if (lineNum == -1) {
+      // lead in
+    }
+    else if (lineNum == 0) {
+      $('.song-settings').animate({ borderLeftWidth: '1440px' }, 60000 * sequence.bars * sequence.meter_bottom / playBPM , 'linear');
+      if (sequence.bars != 2) {
+        $('.marker-current').animate({
+          width: '700px'
+        }, 60000 / playBPM * sequence.meter_bottom, 'linear', function() {
+          $(this).animate({
+            width: '1400px'
+          }, 60000 / playBPM * sequence.meter_bottom, 'linear', function() { animateLine(lineNum + 1); });
+        });
+      }
+      else {
+        $('.marker-current').animate({
           width: '1400px'
-        }, 60000 / playBPM * sequence.meter_bottom, 'linear', function() { animateLine(lineNum + 1); });
-      });
+        }, 60000 / playBPM * sequence.meter_bottom, 'linear', function() {
+          lineNum += 1;
+          $('.main').animate({ scrollTop: 360*lineNum + 'px' }, 120000 / playBPM * sequence.meter_bottom, 'linear');
+          $('.marker-current').removeClass('marker-current');
+          $('.wrapper').append('<div class="marker marker-current" style="top: ' + (235 + 360*lineNum) + 'px"></div>');
+          $('.marker-current').animate({
+            width: '1400px'
+          }, 60000 / playBPM * sequence.meter_bottom, 'linear', function() { animateLine(1); });
+        });
+      }
     }
     else if (lineNum == Math.floor(sequence.bars / 2 + 0.5)) {
       window.clearInterval(timer);

@@ -52,8 +52,17 @@
 <% end %>
 
 <script>
+  var staveX = 0;
+  var staveY = -10;
+  var staveWidth = 174.5;
+  var staveHeight = 90;
 
-  $("#sheet").attr("height", 360 * Math.floor(sequence.bars / 2 + 0.5));
+  if (sequence.bars == 2) {
+    $("#sheet").attr("height", 720);
+  }
+  else {
+    $("#sheet").attr("height", 360 * Math.floor(sequence.bars / 2 + 0.5));
+  }
 
   var canvas = $("#sheet")[0];
   var renderer = new Vex.Flow.Renderer(canvas, Vex.Flow.Renderer.Backends.CANVAS);
@@ -61,17 +70,19 @@
   var ctx = renderer.getContext();
   ctx.scale(4, 4);
 
-  var staveX = 0;
-  var staveY = -10;
-  var staveWidth = 174.5;
-  var staveHeight = 90;
-
   var mapping = ["a/5","g/5","f/5","e/5","d/5","c/5","a/4","f/4"];
 
   for (i = 0; i < bars.length; i++) { // bars
     var stave;
 
-    if (i % 2 == 0) {
+    if (sequence.bars == 2) {
+      stave = new Vex.Flow.Stave(staveX, staveY, staveWidth * 2);
+      if (i == 0) {
+        stave.addClef("percussion").addTimeSignature(sequence.meter_top + "/" + sequence.meter_bottom);
+        staveY += staveHeight;
+      }
+    }
+    else if (i % 2 == 0) {
       stave = new Vex.Flow.Stave(staveX, staveY, staveWidth);
       if (i == 0) {
         stave.addClef("percussion").addTimeSignature(sequence.meter_top + "/" + sequence.meter_bottom);
@@ -110,16 +121,28 @@
             }
           }
           else { // note
-            noteBuffer.push(new Vex.Flow.StaveNote({ keys: [mapping[currNote.drum]], duration: vexDuration(currNote.duration) }));
+            var newNote = new Vex.Flow.StaveNote({ keys: [mapping[currNote.drum]], duration: vexDuration(currNote.duration) });
+            if (currNote.drum < 3) {
+              newNote.note_heads[0].glyph_code = 'v3e';
+            }
+            noteBuffer.push(newNote);
           }
         }
         else { // chord
           var keys = [];
           var currNotes = bars[i][j][k];
+          var cymbal_indices = [];
           for (l = 0; l < currNotes.length; l++) {
             keys.push(mapping[currNotes[l].drum]);
+            if (currNotes[l].drum < 3) {
+              cymbal_indices.push(l);
+            }
           }
-          noteBuffer.push(new Vex.Flow.StaveNote({ keys: keys, duration: vexDuration(currNotes[0].duration) }));
+          var newNotes = new Vex.Flow.StaveNote({ keys: keys, duration: vexDuration(currNotes[0].duration) });
+          for (l = 0; l < cymbal_indices.length; l++) {
+            newNotes.note_heads[cymbal_indices[l]].glyph_code = 'v3e';
+          }
+          noteBuffer.push(newNotes);
         }
       }
       notes.push(noteBuffer);
