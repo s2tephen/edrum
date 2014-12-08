@@ -85,6 +85,7 @@ class SequencesController < ApplicationController
     elsif params[:enableLoop]
       mode = 4 #PRACTICE LOOP
     end
+    puts "MODE:**********", mode
 
     if params[:enableSticking]
       sticking = 1
