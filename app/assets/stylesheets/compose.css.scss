@@ -1,0 +1,19 @@
+.start-compose-btn, .stop-compose-btn {
+  float: center;
+  background-color: transparent;
+  border: 6px solid #000;
+  width: 200px;
+  height: 200px;
+  border-radius: 35px;
+  margin-top: 200px;
+  font-size: 2em;
+  padding-left: 0.4em;
+  padding-top: 0.4em;
+  &:focus {
+    outline: none;
+  }
+  &:hover {
+    border-color: rgb(142, 68, 173);
+    color: rgb(142, 68, 173);
+  }
+}

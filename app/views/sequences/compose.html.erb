@@ -1,9 +1,14 @@
 <% content_for :title, "Compose" %>
 
-<button class="play-btn" id="start-compose-btn">Start Compose</button>
-<button class="play-btn" id="stop-compose-btn">Stop Compose</button>
-
 <%= javascript_tag "var sequence = #{@sequence.to_json}" %>
+
+<button class="start-compose-btn" id="start-compose-btn"><i class="fa fa-play"></i></button>
+<button class="stop-compose-btn" id="stop-compose-btn"><i class="fa fa-stop"></i></button>
+
+<button class="play-compose-btn" id="play-compose-btn" disabled>Demo track</button>
+
+
+
 
 
 <script>
@@ -23,6 +28,7 @@
 
   // hit form: [h:4,23643,1]
   $("#stop-compose-btn").click(function(e) {
+    $("#play-compose-btn").removeAttr("disabled");
     console.log("hit button");
     // hits.push("[h:4,23643,1]"); // for testing
     if (hits.length != 0) {
@@ -36,6 +42,10 @@
     } else {
       alert("You must hit start and then hit notes first!");
     }
+  });
+
+  $("#play-compose-btn").click(function(e) {
+    window.location.href = "/practice/" + sequence.id;
   });
 
     // hitSource.onopen = function (e) {

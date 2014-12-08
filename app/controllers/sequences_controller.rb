@@ -106,7 +106,7 @@ class SequencesController < ApplicationController
   end
 
   def start_compose
-    @sequence.start_seq(5,@sequence.bpm);
+    @sequence.start_seq(5,@sequence.bpm,0);
     render :nothing => true
   end
 
