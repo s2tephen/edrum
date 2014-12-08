@@ -59,13 +59,17 @@ $(document).ready(function() {
 
   // push note onto the queue
   function scheduleNote(beatNumber, time) {
-    if (beatNumber == sequence.bars * sequence.meter_bottom * (16/sequence.meter_bottom))
+    if (beatNumber == (2 + sequence.bars) * sequence.meter_bottom * (16/sequence.meter_bottom))
       return; // don't play the last note in a sequence
-    notesInQueue.push({ note: beatNumber, time: time });
+    if (beatNumber == -28 || beatNumber == -20) // count in - audio only TODO: visuals
+      return;
     if ((noteResolution == 1) && (beatNumber % 2))
       return; // don't play 16th notes
     if ((noteResolution == 2) && (beatNumber % 4))
       return; // don't play 8th notes
+
+    if (beatNumber > -1)
+      notesInQueue.push({ note: beatNumber, time: time });
 
     // create an oscillator
     var osc = audioContext.createOscillator();
@@ -87,14 +91,15 @@ $(document).ready(function() {
   function play() {
     isPlaying = !isPlaying;
     swapButton();
-    animateLine(0);
     if (isPlaying) { // start playing
-      current16thNote = 0;
+      animateLine(-1);
+      current16thNote = -32 * sequence.meter_top/sequence.meter_bottom;
       nextNoteTime = audioContext.currentTime;
       timerWorker.postMessage("start");
       return "stop";
     }
     else {
+      animateLine(0);
       timerWorker.postMessage("stop");
       return "play";
     }
@@ -105,7 +110,7 @@ $(document).ready(function() {
     if (isPlaying) {
       $('.play-btn').removeClass('play-btn').addClass('stop-btn').children().first().removeClass('fa-play').addClass('fa-stop');
       $('.song-info').addClass('playing');
-      $('.song-settings').addClass('playing').animate({ borderLeftWidth: '1440px' }, 60000 * sequence.bars * sequence.meter_bottom / songSettings.bpm , 'linear');
+      $('.song-settings').addClass('playing');
     }
     else {
       $('.stop-btn').removeClass('stop-btn').addClass('play-btn').children().first().removeClass('fa-stop').addClass('fa-play');
@@ -117,10 +122,9 @@ $(document).ready(function() {
   function animateLine(lineNum) {
     if (isPlaying) {
       if (lineNum == -1) {
-        // TODO: lead in
+        setTimeout(function() { animateLine(0); }, 120000 * sequence.meter_bottom / songSettings.bpm);
       }
       else if (lineNum == 0) {
-        $('.wrapper').append('<div class="marker marker-current" style="top: 235px; width: 200px;"></div>');
         $('.song-settings').animate({ borderLeftWidth: '1440px' }, 60000 * sequence.bars * sequence.meter_bottom / songSettings.bpm , 'linear');
         if (sequence.bars != 2) {
           $('.marker-current').animate({
@@ -150,7 +154,7 @@ $(document).ready(function() {
           $('.main').scrollTop(0);
           $('.marker').remove();
           animateLine(0);
-          current16thNote = 0;
+          current16thNote = -32 * sequence.meter_top/sequence.meter_bottom;
           currentTime = 0;
         }
         else {
