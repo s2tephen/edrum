@@ -199,7 +199,7 @@ class Sequence < ActiveRecord::Base
       track2 = '[t:-1]'
       track3 = '[t:-1]'
       lengths = '[l:-1]'
-      metadata = '[m:3,1,0]'
+      metadata = '[m:5,1,0]'
     else
       seq_length = self.notes.select('bar, beat').distinct.length
 
@@ -320,6 +320,7 @@ class Sequence < ActiveRecord::Base
 
     buf = ''
     while true do
+      # begin
       if (o = sp.gets)
         sp.flush
         buf << o
@@ -337,6 +338,9 @@ class Sequence < ActiveRecord::Base
           input = ''
         end
       end
+      # rescue
+
+      # end
     end
 
     sp.close
