@@ -307,7 +307,7 @@ class Sequence < ActiveRecord::Base
     puts seq
 
     # write sequence to serial
-    sp = SerialPort.new('/dev/tty.usbmodemfa131', 115200, 8, 1, SerialPort::NONE)
+    sp = SerialPort.new('/dev/tty.usbmodem586951', 115200, 8, 1, SerialPort::NONE)
     sp.sync = true
 
     seq.each do |i|
