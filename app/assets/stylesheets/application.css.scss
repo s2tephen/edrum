@@ -23,7 +23,7 @@ html, body {
 body {
   box-sizing: content-box !important;
   overflow: hidden;
-  font-family: "Avenir Next", "Avenir", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-family: "Bryant", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
   transition: margin 0.3s ease-out, padding 0.3s ease-out;
 }
 
@@ -123,24 +123,27 @@ body {
     margin-top: 0;
     li {
       padding-left: 0 !important;
-      font-family: "Avenir";
+      font-family: "Bryant";
       font-size: 1.3em;
       float: none;
+      &:nth-child(1) i {
+        margin-right: 20px;
+      }
+      &:nth-child(2) i {
+        margin-right: 14px;
+      }
+      &:nth-child(3) i {
+        margin-right: 18px;
+      }
+      &:nth-child(4) i {
+        margin-right: 17px;
+      }
       a {
         padding: 20px 20px;
         color: rgb(102, 102, 102);
         &:hover {
           background: none;
           color: rgb(255, 255, 255);
-        }
-        &:nth-child(1) i {
-          margin-right: 16px;
-        }
-        &:nth-child(2) i {
-          margin-right: 11px;
-        }
-        &:nth-child(3) i {
-          margin-right: 12px;
         }
       }
       @media screen and (min-width: 768px) {
@@ -215,7 +218,7 @@ body {
 }
 
 p, ol, ul, td {
-  font-family: "Avenir Next";
+  font-family: "Bryant";
 }
 
 .table {
@@ -295,5 +298,11 @@ p, ol, ul, td {
     &:hover {
       background-color: rgb(102, 102, 102);
     }
+  }
+  .form-num-input {
+    width: auto !important;
+  }
+  .sequence_bpm label {
+    text-transform: uppercase;
   }
 }

@@ -1,0 +1,8 @@
+<%= simple_form_for @sequence, html: { class: 'form-horizontal' }, defaults: { wrapper_html: { class: 'form-group' } } do |f| %>
+  <%= f.input :title, input_html: { class: 'form-control' }, required: true %>
+  <%= f.input :artist, input_html: { class: 'form-control' }, required: true %>
+  <%= f.input :bpm, input_html: { class: 'form-control form-num-input bpm-input' }, required: true %>
+  <%= f.input :meter_top, input_html: { class: 'form-control form-num-input' }, required: true %>
+  <%= f.input :meter_bottom, input_html: { class: 'form-control form-num-input' }, required: true %>
+  <%= f.button :submit %>
+<% end %>

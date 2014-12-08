@@ -30,8 +30,8 @@ class SequencesController < ApplicationController
 
     respond_to do |format|
       if @sequence.save
-        format.html { redirect_to @sequence, notice: 'Sequence was successfully created.' }
-        format.json { render :show, status: :created, location: @sequence }
+        format.html { redirect_to action: 'index', notice: 'Sequence was successfully created.' }
+        format.json { render :index, status: :created, location: @sequence }
         @sequence.create_notes
       else
         format.html { render :new }

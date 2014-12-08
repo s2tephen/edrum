@@ -4,8 +4,8 @@
   <h1><%= @sequence.title %></h1>
   <h3><%= @sequence.artist %></h3>
   <h1 class="note-feedback">Good</h1>
-  <button class="listen-btn" id="practice-listen-btn"><i class="fa fa-headphones"></i></button>
-  <button class="play-btn" id="practice-play-btn"><i class="fa fa-play"></i></button>
+  <button class="listen-btn"><i class="fa fa-headphones"></i></button>
+  <button class="play-btn"><i class="fa fa-play"></i></button>
   <form class="song-settings form-inline">
     <div class="form-fields">
       <div class="header">
@@ -13,7 +13,7 @@
       </div>
       <div class="bpm">
         <div class="input-group col-sm-1">
-          <input type="text" class="form-control" id="bpmInput" placeholder="120">
+          <input type="text" class="form-control" id="bpmInput" placeholder="<%= @sequence.bpm %>">
           <div class="input-group-addon">BPM</div>
         </div>
       </div>

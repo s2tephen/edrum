@@ -63,7 +63,7 @@ canvas {
   margin-right: 90px;
   margin-top: -80px;
   font-size: 2em;
-  padding-top: 0.2em;
+  padding-top: 0.3em;
   &:focus {
     outline: none;
   }
@@ -73,7 +73,7 @@ canvas {
   }
 }
 
-.play-btn {
+.play-btn, .stop-btn {
   float: right;
   background-color: transparent;
   border: 6px solid #000;
@@ -83,7 +83,7 @@ canvas {
   margin-top: -85px;
   font-size: 2em;
   padding-left: 0.4em;
-  padding-top: 0.2em;
+  padding-top: 0.4em;
   &:focus {
     outline: none;
   }
@@ -91,6 +91,10 @@ canvas {
     border-color: rgb(142, 68, 173);
     color: rgb(142, 68, 173);
   }
+}
+
+.stop-btn {
+  padding-left: 0.2em;
 }
 
 .note-feedback {
@@ -116,6 +120,7 @@ canvas {
     font-weight: 600;
     display: inline;
     margin-right: 40px;
+    text-transform: uppercase;
     i {
       margin-right: 4px;
     }
