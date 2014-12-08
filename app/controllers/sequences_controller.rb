@@ -30,9 +30,14 @@ class SequencesController < ApplicationController
 
     respond_to do |format|
       if @sequence.save
-        format.html { redirect_to action: 'index', notice: 'Sequence was successfully created.' }
-        format.json { render :index, status: :created, location: @sequence }
-        @sequence.create_notes
+        if not @sequence.bpm
+          format.html { redirect_to action: 'index', notice: 'Sequence was successfully created.' }
+          format.json { render :index, status: :created, location: @sequence }
+          @sequence.create_notes
+        else
+          format.html { redirect_to action: 'compose', id: @sequence.id, notice: 'Sequence ready to compose.' }
+          format.json { render :compose, status: :created, location: @sequence }
+        end
       else
         format.html { render :new }
         format.json { render json: @sequence.errors, status: :unprocessable_entity }
