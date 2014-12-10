@@ -199,7 +199,7 @@ class Sequence < ActiveRecord::Base
       track2 = '[t:-1]'
       track3 = '[t:-1]'
       lengths = '[l:-1]'
-      metadata = '[m:3,1,0]'
+      metadata = '[m:5,1,0]'
     else
       seq_length = self.notes.select('bar, beat').distinct.length
 
@@ -307,7 +307,8 @@ class Sequence < ActiveRecord::Base
     puts seq
 
     # write sequence to serial
-    sp = SerialPort.new('/dev/tty.usbmodem586951', 115200, 8, 1, SerialPort::NONE)
+
+    sp = SerialPort.new('/dev/tty.usbmodem586841', 115200, 8, 1, SerialPort::NONE)
     sp.sync = true
 
     seq.each do |i|
@@ -346,7 +347,7 @@ class Sequence < ActiveRecord::Base
 
   def end_compose
     # write sequence to serial
-    sp = SerialPort.new('/dev/tty.usbmodemfa131', 115200, 8, 1, SerialPort::NONE)
+    sp = SerialPort.new('/dev/tty.usbmodem586841', 115200, 8, 1, SerialPort::NONE)
     sp.sync = true
 
     puts 'app> [e]'

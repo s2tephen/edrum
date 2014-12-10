@@ -2,14 +2,12 @@
 
 <%= javascript_tag "var sequence = #{@sequence.to_json}" %>
 
-<button class="start-compose-btn" id="start-compose-btn"><i class="fa fa-play"></i></button>
-<button class="stop-compose-btn" id="stop-compose-btn"><i class="fa fa-stop"></i></button>
+<button class="start-compose-btn" id="start-compose-btn"><i class="fa fa-circle"></i></button>
+<button class="stop-compose-btn hidden" id="stop-compose-btn"><i class="fa fa-stop"></i></button>
+
+<div class="compose-timer">BAR <span>0001</span> &emsp;&emsp; BEAT <span>0</span></div>
 
 <button class="play-compose-btn" id="play-compose-btn" disabled>Demo track</button>
-
-
-
-
 
 <script>
   var hits = [];
@@ -24,6 +22,8 @@
       console.log(hit);
       hits.push(hit);
     }
+    $(this).addClass('hidden');
+    $("#stop-compose-btn").removeClass('hidden');
   });
 
   // hit form: [h:4,23643,1]
@@ -39,13 +39,26 @@
         contentType: 'application/json',
         data : JSON.stringify( {"hits" : hits} )
       });
-    } else {
-      alert("You must hit start and then hit notes first!");
     }
+    $(this).addClass('hidden');
+    $("#start-compose-btn").removeClass('hidden');
   });
 
   $("#play-compose-btn").click(function(e) {
-    window.location.href = "/practice/" + sequence.id;
+    // window.location.href = "/practice/" + sequence.id;
+    $.ajax({
+      type : "POST",
+      url :  '/practice/' + sequence.id + '/start',
+      dataType: 'json',
+      contentType: 'application/json',
+      data : JSON.stringify( {
+        demoMode: true,
+        playBPM: sequence.bpm,
+        enableLoop: false,
+        enableStepByStep: false,
+        enableSticking: false
+      })
+    });
   });
 
     // hitSource.onopen = function (e) {
@@ -68,4 +81,87 @@
     //    console.log("Error State  \n\n"+e.data);
     // };
   // }
+
+  var audioContext = new AudioContext();
+  var isPlaying = false;
+  var startTime;
+  var current16thNote;
+
+  var lookahead = 25.0;
+  var scheduleAheadTime = 0.1;
+  var nextNoteTime = 0.0;
+  var noteResolution = 2;
+  var noteLength = 0.075;
+  var notesInQueue = [];
+  var seqIn16thNotes = [];
+  var timerWorker = new Worker("../assets/metronomeworker.js");
+
+  timerWorker.onmessage = function(e) {
+    if (e.data == "tick") {
+      scheduler();
+    }
+    else
+      console.log("message: " + e.data);
+  };
+  timerWorker.postMessage({"interval":lookahead});
+
+  // advance current note and time by a 16th note
+  function nextNote() {
+    var secondsPerBeat = 60.0 / songSettings.bpm;
+    nextNoteTime += 0.25 * secondsPerBeat;
+    current16thNote++;
+  }
+
+  // push note onto the queue
+  function scheduleNote(beatNumber, time) {
+    // create an oscillator
+    var osc = audioContext.createOscillator();
+    osc.frequency.value = 500;
+
+    if (beatNumber == sequence.bars * 16)
+      return; // don't play the last note in a sequence
+    if (beatNumber == -28 || beatNumber == -20) // count in - audio only TODO: visuals
+      return;
+    if ((noteResolution == 1) && (beatNumber % 2))
+      return; // don't play 16th notes
+    if ((noteResolution == 2) && (beatNumber % 4))
+      return; // don't play 8th notes
+
+    if (beatNumber > -1) {
+      $('.compose-timer span').last().text(parseInt($('.compose-timer span').last()) + 1 + '');
+      if (beatNumber % 16 == 0) {
+        osc.frequency.value = 750;
+      }
+      notesInQueue.push({ note: beatNumber, time: time });
+    }
+
+    osc.connect(audioContext.destination);
+    osc.start(time);
+    osc.stop(time + noteLength);
+  }
+
+  // schedule notes and advance pointer
+  function scheduler() {
+    while (nextNoteTime < audioContext.currentTime + scheduleAheadTime) {
+      scheduleNote(current16thNote, nextNoteTime);
+      nextNote();
+    }
+  }
+
+  // toggle play/stop
+  function play() {
+    isPlaying = !isPlaying;
+    if (isPlaying) { // start playing
+      if (!songSettings.stepByStep)
+      // current16thNote = -32 * sequence.meter_top/sequence.meter_bottom;
+      current16thNote = 0;
+      nextNoteTime = audioContext.currentTime;
+      timerWorker.postMessage("start");
+      return "stop";
+    }
+    else {
+      timerWorker.postMessage("stop");
+      return "play";
+    }
+  }
 </script>

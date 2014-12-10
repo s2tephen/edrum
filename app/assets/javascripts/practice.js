@@ -44,6 +44,7 @@ $(document).ready(function() {
   var hitSource = new EventSource("/serial");
   hitSource.onmessage = function(e) {
     var hit = jQuery.parseJSON (e.data);
+    console.log(hit);
     if (hit[2] == 1 && seqIn16thNotes[current16thNote].includes(hit[0])) { // exact note
       console.log('good');
       console.log('diff: ' + (hit[1] - notesInQueue[current16thNote].time));
@@ -59,7 +60,11 @@ $(document).ready(function() {
 
   // push note onto the queue
   function scheduleNote(beatNumber, time) {
-    if (beatNumber == (2 + sequence.bars) * sequence.meter_bottom * (16/sequence.meter_bottom))
+    // create an oscillator
+    var osc = audioContext.createOscillator();
+    osc.frequency.value = 500;
+
+    if (beatNumber == sequence.bars * 16)
       return; // don't play the last note in a sequence
     if (beatNumber == -28 || beatNumber == -20) // count in - audio only TODO: visuals
       return;
@@ -67,14 +72,18 @@ $(document).ready(function() {
       return; // don't play 16th notes
     if ((noteResolution == 2) && (beatNumber % 4))
       return; // don't play 8th notes
+    if (!songSettings.metronome) {
+      osc.frequency.value = 0;
+    }
 
-    if (beatNumber > -1)
+    if (beatNumber > -1) {
+      if (beatNumber % 16 == 0 && songSettings.metronome) {
+        osc.frequency.value = 750;
+      }
       notesInQueue.push({ note: beatNumber, time: time });
+    }
 
-    // create an oscillator
-    var osc = audioContext.createOscillator();
     osc.connect(audioContext.destination);
-    osc.frequency.value = 500;
     osc.start(time);
     osc.stop(time + noteLength);
   }
@@ -92,7 +101,8 @@ $(document).ready(function() {
     isPlaying = !isPlaying;
     swapButton();
     if (isPlaying) { // start playing
-      animateLine(-1);
+      if (!songSettings.stepByStep)
+        animateLine(-1);
       current16thNote = -32 * sequence.meter_top/sequence.meter_bottom;
       nextNoteTime = audioContext.currentTime;
       timerWorker.postMessage("start");
@@ -123,6 +133,7 @@ $(document).ready(function() {
     if (isPlaying) {
       if (lineNum == -1) {
         setTimeout(function() { animateLine(0); }, 120000 * sequence.meter_bottom / songSettings.bpm);
+        $('.wrapper').append('<div class="marker marker-current" style="top:235px; width: 200px">');
       }
       else if (lineNum == 0) {
         $('.song-settings').animate({ borderLeftWidth: '1440px' }, 60000 * sequence.bars * sequence.meter_bottom / songSettings.bpm , 'linear');
@@ -153,8 +164,9 @@ $(document).ready(function() {
         if (songSettings.loop) {
           $('.main').scrollTop(0);
           $('.marker').remove();
+          $('.wrapper').append('<div class="marker marker-current" style="top:235px; width: 200px">');
           animateLine(0);
-          current16thNote = -32 * sequence.meter_top/sequence.meter_bottom;
+          current16thNote = 0;
           currentTime = 0;
         }
         else {
@@ -203,19 +215,21 @@ $(document).ready(function() {
       'demoMode': $(this).hasClass('listen-btn')
     };
 
-    $.ajax({
-      type : "POST",
-      url :  '/practice/' + sequence.id + '/start',
-      dataType: 'json',
-      contentType: 'application/json',
-      data : JSON.stringify({
-        demoMode: songSettings.demoMode,
-        playBPM: songSettings.bpm,
-        enableLoop: songSettings.loop,
-        enableStepByStep: songSettings.stepByStep,
-        enableSticking: songSettings.sticking
-      })
-    });
+    setTimeout(function() {
+      $.ajax({
+        type : "POST",
+        url :  '/practice/' + sequence.id + '/start',
+        dataType: 'json',
+        contentType: 'application/json',
+        data : JSON.stringify({
+          demoMode: songSettings.demoMode,
+          playBPM: songSettings.bpm,
+          enableLoop: songSettings.loop,
+          enableStepByStep: songSettings.stepByStep,
+          enableSticking: songSettings.sticking
+        })
+      });
+    }, 2 * sequence.meter_bottom / songSettings.bpm * 60000 - 750);
 
     play();
   });

@@ -31,9 +31,9 @@ class SequencesController < ApplicationController
     respond_to do |format|
       if @sequence.save
         if not @sequence.bpm
+          @sequence.create_notes
           format.html { redirect_to action: 'index', notice: 'Sequence was successfully created.' }
           format.json { render :index, status: :created, location: @sequence }
-          @sequence.create_notes
         else
           format.html { redirect_to action: 'compose', id: @sequence.id, notice: 'Sequence ready to compose.' }
           format.json { render :compose, status: :created, location: @sequence }
@@ -120,9 +120,9 @@ class SequencesController < ApplicationController
 
     hits = params[:hits]
     hits.each do |hit|
-      total_beat = (@sequence.bpm*hit[:start].to_i/60000).floor
+      total_beat = (@sequence.bpm*hit[:start].to_i/60000).round(2)
       puts "total_beat****#{total_beat}"
-      note_bar = (total_beat/@sequence.meter_bottom).floor
+      note_bar = (total_beat/@sequence.meter_bottom)
       note_beat = total_beat % @sequence.meter_bottom
       notes << Note.create(:drum => hit[:drum], :bar => note_bar, :beat => note_beat, :sequence_id => @sequence.id, :duration => 0.25)
     end
