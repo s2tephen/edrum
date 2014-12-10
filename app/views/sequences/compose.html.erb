@@ -15,7 +15,6 @@
     console.log("start");
     var id = sequence.id;
     $.post('/compose/'+id+'/start', function(data) {});
-    hits = [];
     var hitSource = new EventSource("/serial");
     hitSource.onmessage = function(e) {
       var hit = jQuery.parseJSON (e.data);

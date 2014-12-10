@@ -321,6 +321,7 @@ class Sequence < ActiveRecord::Base
 
     buf = ''
     while true do
+      # begin
       if (o = sp.gets)
         sp.flush
         buf << o
@@ -338,6 +339,9 @@ class Sequence < ActiveRecord::Base
           input = ''
         end
       end
+      # rescue
+
+      # end
     end
 
     sp.close
